@@ -15,11 +15,16 @@ struct hash_table
 
   void insert(unsigned long long key)
   {
-    int i = 0;
-    while (table[hashing_method(key, size, i)] != -1)
-    {
-      i++;
+    int i = -1;
+    int hasingResult = 0;
+    if(key == 1218138993067529984){
+      int asd = 1;
     }
+    do{
+      hasingResult = hashing_method(key, size, i);
+      i++;
+    }while (table[hasingResult] != -1);
+
     table[hashing_method(key, size, i)] = key;
   }
 
