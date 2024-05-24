@@ -17,20 +17,18 @@ struct hash_table
   {
     int i = -1;
     int hasingResult = 0;
-    if(key == 1218138993067529984){
-      int asd = 1;
-    }
-    do{
+    do
+    {
       hasingResult = hashing_method(key, size, i);
       i++;
-    }while (table[hasingResult] != -1);
+    } while (table[hasingResult] != -1);
 
     table[hashing_method(key, size, i)] = key;
   }
 
   bool search(unsigned long long key)
   {
-    unsigned long long i = 0;
+    int i = 0;
     while (table[hashing_method(key, size, i)] != key && table[hashing_method(key, size, i)] != -1)
     {
       i++;
