@@ -20,14 +20,15 @@ unsigned long long simple_hash(const std::string& str) {
     return hash;
 }
 
+//funcion hash 1
 unsigned long long h1(const std::string& k, int n) {
     unsigned long long hash = simple_hash(k);
     return hash % n;
 }
 
+//funcion hash 2
 unsigned long long h2(const std::string& k, int n) {
-    // Utilizamos una constante A como factor de hashing
-    const float A = 0.61803398875; // Phi, número áureo
+    const float A = 0.61803398875;
     float a = simple_hash(k) * A;
     a -= static_cast<int>(a);
     return n * a;
@@ -48,25 +49,86 @@ int double_hashing(const std::string& k, int n, int i)
     return (h1(k, n) + i * (h2(k, n) + 1)) % n;
 }
 
-using namespace std;
+//Funcion que hace n_inserts inserciones, el archivo csv que genera da la duracion total despues de todas las inserciones
+//Usa una hash table
+void test_insert(hash_table_string& hts, int n_inserts,
+        std::vector<std::string> users_names, std::string out_file_name){
+    
+    //Creamos el archivo .csv
+    ofstream file_out(out_file_name, ios::trunc); 
+    
+    //Hacemos las inserciones
+    for (int i = 0; i < n_inserts; i++)
+    {
+        auto start = chrono::high_resolution_clock::now();
+        std::string key = users_names[i];
+        hts.insert(key);
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+        file_out << i + 1 << ", " << duration << std::endl;
+    }
+}
+//misma funcion pero que usa un unoredered_map
+void test_insert(unordered_map<std::string, std::string>& um, int n_inserts,
+        std::vector<std::string> users_names, std::string out_file_name){
+    
+    //Creamos el archivo .csv
+    ofstream file_out(out_file_name, ios::trunc); 
+    
+    //Hacemos las inserciones
+    for (int i = 0; i < n_inserts; i++)
+    {
+        auto start = chrono::high_resolution_clock::now();
+        std::string key = users_names[i];
+        um[key] = key;
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+        file_out << i + 1 << ", " << duration << std::endl;
+    }
+}
+
+// Función que hace n_searches búsquedas y guarda la duración de cada búsqueda en un archivo CSV
+void test_search(hash_table_string& hts, int n_searches, std::vector<std::string> users_names, std::string out_file_name) {
+    // Creamos el archivo .csv
+    std::ofstream file_out(out_file_name, std::ios::trunc);
+
+    // Hacemos las búsquedas
+    for (int i = 0; i < n_searches; i++) {
+        auto start = std::chrono::high_resolution_clock::now();
+        std::string key = users_names[i];
+        hts.search(key);  
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+        file_out << i + 1 << ", " << duration << std::endl;
+    }
+}
+
+// Misma función pero que usa un unordered_map
+void test_search(std::unordered_map<std::string, std::string>& um, int n_searches, std::vector<std::string> users_names, std::string out_file_name) {
+    // Creamos el archivo .csv
+    std::ofstream file_out(out_file_name, std::ios::trunc);
+
+    // Hacemos las búsquedas
+    for (int i = 0; i < n_searches; i++) {
+        auto start = std::chrono::high_resolution_clock::now();
+        std::string key = users_names[i];
+        um.find(key);
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+        file_out << i + 1 << ", " << duration << std::endl;
+    }
+}
+
 int main()
 {
     // Ruta del archivo CSV
     // archivo sin repeticiones ni numeros en notacion cientifica
-    string filename = "universities_followers_int64.csv";
+    std::string filename = "universities_followers_int64.csv";
     // Crear una instancia de CSVReader
     csv_reader csvReader(filename);
 
-    // Extraer la segunda columna
+    // Extraer la tercera columna (user_name)
     vector<std::string> third_column = csvReader.extract_column(2);
-
-    // Imprimir la segunda columna para verificar el resultado
-    //  for (const auto &value : second_column)
-    //  {
-    //      cout << value << endl;
-    //      count++;
-    //  }
-    //  cout << count << endl;
 
     int N = 21070;
     hash_table_string ht_linear(N, linear_probing);
@@ -74,57 +136,29 @@ int main()
     hash_table_string ht_double(N, double_hashing);
     unordered_map<std::string, std::string> um;
 
-    ofstream file("linear_insert.csv");
-    for (int i = 0; i < third_column.size(); i++)
-    {
-        const std::string num = third_column[i];
-        auto start = chrono::high_resolution_clock::now();
-        ht_linear.insert(num);
-        auto end = chrono::high_resolution_clock::now();
-        auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-        file << i + 1 << ", " << duration << "\n";
-    }
-    file.close();
+    test_insert(ht_linear, N, third_column, "linear_insert_usernames.csv");
     std::cout << "Linear probing listo" << std::endl;
 
-    file.open("quadratic_insert.csv");
-    for (int i = 0; i < third_column.size(); i++)
-    {
-        const std::string num = third_column[i];
-        auto start = chrono::high_resolution_clock::now();
-        ht_quadratic.insert(num);
-        auto end = chrono::high_resolution_clock::now();
-        auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-        file << i + 1 << ", " << duration << "\n";
-    }
-    file.close();
-    std::cout << "quadratic probing listo" << std::endl;
+    test_insert(ht_quadratic, N, third_column, "quadratic_insert_usernames.csv");
+    std::cout << "Quadratic probing listo" << std::endl;
 
-    file.open("unorderedmap_insert.csv");
-    for (int i = 0; i < third_column.size(); i++)
-    {
-        const std::string num = third_column[i];
-        auto start = chrono::high_resolution_clock::now();
-        um[num] = num;
-        auto end = chrono::high_resolution_clock::now();
-        auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-        file << i + 1 << ", " << duration << "\n";
-    }
-    file.close();
-    std::cout << "unordered_map listo" << std::endl;
+    test_insert(um, N, third_column, "unorderedmap_insert_usernames.csv");
+    std::cout << "Unordered_map listo" << std::endl;
 
-    file.open("double_insert.csv");
-    for (int i = 0; i < third_column.size(); i++)
-    {
-        const std::string num = third_column[i];
-        auto start = chrono::high_resolution_clock::now();
-        ht_double.insert(num);
-        auto end = chrono::high_resolution_clock::now();
-        auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-        file << i + 1 << ", " << duration << "\n";
-    }
-    file.close();
-    std::cout << "double hashing listo" << std::endl;
+    test_insert(ht_double, N, third_column, "double_insert_usernames.csv");
+    std::cout << "Double hashing listo" << std::endl;
+
+    test_search(ht_linear, N, third_column, "linear_search_usernames.csv");
+    std::cout << "Search en linear listo" << std::endl;
+
+    test_search(ht_quadratic, N, third_column, "quadratic_search_usernames.csv");
+    std::cout << "Search en probing listo" << std::endl;
+
+    test_search(um, N, third_column, "unorderedmap_search_usernames.csv");
+    std::cout << "Search en unordered listo" << std::endl;
+
+    test_search(ht_double, N, third_column, "double_search_usernames.csv");
+    std::cout << "Search en double listo" << std::endl;
 
     return 0;
 }
