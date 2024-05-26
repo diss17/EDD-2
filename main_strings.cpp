@@ -55,68 +55,94 @@ void test_insert(hash_table_string& hts, int n_inserts,
         std::vector<std::string> users_names, std::string out_file_name){
     
     //Creamos el archivo .csv
-    ofstream file_out(out_file_name, ios::trunc); 
+    ofstream file_out(out_file_name, ios::app); 
     
     //Hacemos las inserciones
+    auto start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n_inserts; i++)
     {
-        auto start = chrono::high_resolution_clock::now();
         std::string key = users_names[i];
         hts.insert(key);
-        auto end = chrono::high_resolution_clock::now();
-        auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-        file_out << i + 1 << ", " << duration << std::endl;
     }
+    auto end = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    file_out << n_inserts << ", " << duration << std::endl;
 }
 //misma funcion pero que usa un unoredered_map
 void test_insert(unordered_map<std::string, std::string>& um, int n_inserts,
         std::vector<std::string> users_names, std::string out_file_name){
     
     //Creamos el archivo .csv
-    ofstream file_out(out_file_name, ios::trunc); 
+    ofstream file_out(out_file_name, ios::app); 
     
     //Hacemos las inserciones
+    auto start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n_inserts; i++)
     {
-        auto start = chrono::high_resolution_clock::now();
         std::string key = users_names[i];
         um[key] = key;
-        auto end = chrono::high_resolution_clock::now();
-        auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-        file_out << i + 1 << ", " << duration << std::endl;
     }
+    auto end = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    file_out << n_inserts << ", " << duration << std::endl;
 }
 
 // Función que hace n_searches búsquedas y guarda la duración de cada búsqueda en un archivo CSV
 void test_search(hash_table_string& hts, int n_searches, std::vector<std::string> users_names, std::string out_file_name) {
     // Creamos el archivo .csv
-    std::ofstream file_out(out_file_name, std::ios::trunc);
+    std::ofstream file_out(out_file_name, std::ios::app);
 
     // Hacemos las búsquedas
+    auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < n_searches; i++) {
-        auto start = std::chrono::high_resolution_clock::now();
         std::string key = users_names[i];
         hts.search(key);  
-        auto end = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-        file_out << i + 1 << ", " << duration << std::endl;
     }
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+    file_out << n_searches << ", " << duration << std::endl;
 }
 
 // Misma función pero que usa un unordered_map
 void test_search(std::unordered_map<std::string, std::string>& um, int n_searches, std::vector<std::string> users_names, std::string out_file_name) {
     // Creamos el archivo .csv
-    std::ofstream file_out(out_file_name, std::ios::trunc);
+    std::ofstream file_out(out_file_name, std::ios::app);
 
     // Hacemos las búsquedas
+    auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < n_searches; i++) {
-        auto start = std::chrono::high_resolution_clock::now();
         std::string key = users_names[i];
         um.find(key);
-        auto end = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-        file_out << i + 1 << ", " << duration << std::endl;
     }
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+    file_out << n_searches << ", " << duration << std::endl;
+}
+
+void vaciar_csv(){
+    std::ofstream file_out("linear_insert_usernames.csv", std::ios::trunc);
+    file_out.close();
+    file_out.open("quadratic_insert_usernames.csv", std::ios::trunc);
+    file_out << std::endl;
+    file_out.close();
+    file_out.open("unorderedmap_insert_usernames.csv", std::ios::trunc);
+    file_out << std::endl;
+    file_out.close();
+    file_out.open("double_insert_usernames.csv", std::ios::trunc);
+    file_out << std::endl;
+    file_out.close();
+    file_out.open("linear_search_usernames.csv", std::ios::trunc);
+    file_out << std::endl;
+    file_out.close();
+    file_out.open("quadratic_search_usernames.csv", std::ios::trunc);
+    file_out << std::endl;
+    file_out.close();
+    file_out.open("unorderedmap_search_usernames.csv", std::ios::trunc);
+    file_out << std::endl;
+    file_out.close();
+    file_out.open("double_search_usernames.csv", std::ios::trunc);
+    file_out << std::endl;
+    file_out.close();
 }
 
 int main()
@@ -130,35 +156,39 @@ int main()
     // Extraer la tercera columna (user_name)
     vector<std::string> third_column = csvReader.extract_column(2);
 
-    int N = 21070;
-    hash_table_string ht_linear(N, linear_probing);
-    hash_table_string ht_quadratic(N, quadratic_probing);
-    hash_table_string ht_double(N, double_hashing);
-    unordered_map<std::string, std::string> um;
+    vector<int> quantities = {1000, 5000, 10000, 15000, 20000, 21070};
+    vaciar_csv();
+    for(int quantity: quantities){
+        int N = quantity;
+        hash_table_string ht_linear(N, linear_probing);
+        hash_table_string ht_quadratic(N, quadratic_probing);
+        hash_table_string ht_double(N, double_hashing);
+        unordered_map<std::string, std::string> um;
+        
+        test_insert(ht_linear, quantity, third_column, "linear_insert_usernames.csv");
+        //std::cout << "Linear probing con " << quantity << "elementos listo" << std::endl;
 
-    test_insert(ht_linear, N, third_column, "linear_insert_usernames.csv");
-    std::cout << "Linear probing listo" << std::endl;
+        test_insert(ht_quadratic, quantity, third_column, "quadratic_insert_usernames.csv");
+        //std::cout << "Quadratic probing con " << quantity << "elementos listo" << std::endl;
 
-    test_insert(ht_quadratic, N, third_column, "quadratic_insert_usernames.csv");
-    std::cout << "Quadratic probing listo" << std::endl;
+        test_insert(um, quantity, third_column, "unorderedmap_insert_usernames.csv");
+        //std::cout << "Unordered map con " << quantity << "elementos listo" << std::endl;
 
-    test_insert(um, N, third_column, "unorderedmap_insert_usernames.csv");
-    std::cout << "Unordered_map listo" << std::endl;
+        test_insert(ht_double, quantity, third_column, "double_insert_usernames.csv");
+        //std::cout << "Double probing con " << quantity << "elementos listo" << std::endl;
 
-    test_insert(ht_double, N, third_column, "double_insert_usernames.csv");
-    std::cout << "Double hashing listo" << std::endl;
+        test_search(ht_linear, quantity, third_column, "linear_search_usernames.csv");
+        //std::cout << "Search en linear listo" << std::endl;
 
-    test_search(ht_linear, N, third_column, "linear_search_usernames.csv");
-    std::cout << "Search en linear listo" << std::endl;
+        test_search(ht_quadratic, quantity, third_column, "quadratic_search_usernames.csv");
+        //std::cout << "Search en probing listo" << std::endl;
 
-    test_search(ht_quadratic, N, third_column, "quadratic_search_usernames.csv");
-    std::cout << "Search en probing listo" << std::endl;
+        test_search(um, quantity, third_column, "unorderedmap_search_usernames.csv");
+        //std::cout << "Search en unordered listo" << std::endl;
 
-    test_search(um, N, third_column, "unorderedmap_search_usernames.csv");
-    std::cout << "Search en unordered listo" << std::endl;
-
-    test_search(ht_double, N, third_column, "double_search_usernames.csv");
-    std::cout << "Search en double listo" << std::endl;
+        test_search(ht_double, quantity, third_column, "double_search_usernames.csv");
+        //std::cout << "Search en double listo" << std::endl;
+    }
 
     return 0;
 }
