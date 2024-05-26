@@ -5,26 +5,19 @@
 #include <math.h>
 #include "hash_table.h"
 
+using namespace std;
+
 float A = (sqrt(5) - 1) / 2;
+
 unsigned long long h1(unsigned long long k, int n)
 {
     return k % n;
 }
-
 unsigned long long h2(unsigned long long k, int n)
 {
     float a = (float)k * A;
     a -= (int)a;
     return n * a;
-}
-unsigned long long h3(const string &k)
-{
-    unsigned long long hash_num = 5381;
-    for (unsigned char c : k)
-    {
-        hash_num = ((hash_num << 5) + hash_num) + c; // hash * 33 + c
-    }
-    return hash_num;
 }
 int linear_probing(unsigned long long k, int n, int i)
 {
@@ -40,10 +33,22 @@ int double_hashing(unsigned long long k, int n, int i)
 {
     return (h1(k, n) + i * (h2(k, n) + 1)) % n;
 }
-
-using namespace std;
-int main()
+// Metodo para llenar el archivo con el numero de elementos a medir y su tiempo respectivo
+void llenar_csv(const string &filename, int n, long long duration)
 {
+    ofstream file;
+    file.open(filename, ios_base::app);
+    file << n << "," << duration << endl;
+    file.close();
+}
+int main(int argc, char const *argv[])
+{
+    if (argc < 2)
+    {
+        cerr << "Usage: " << argv[0] << "<Cantidad de elementos>" << endl;
+        exit(1);
+    }
+    int n = atoi(argv[1]);
     // Ruta del archivo CSV
     // archivo sin repeticiones ni numeros en notacion cientifica
     string filename = "universities_followers_int64.csv";
@@ -52,23 +57,6 @@ int main()
 
     // Extraer la segunda columna
     vector<unsigned long long> id_column = csvReader.extract_column_as_ull(1);
-    vector<string> name_column = csvReader.extract_column(2);
-    vector<unsigned long long> names;
-    // Se recorre el vector con todos los usernames del data set y se les aplica la funcion hash que los convierte
-    // en un valor del tipo unsigned long long, para luego compactarlos e insertarlos en la tabla
-    for (int i = 0; i < name_column.size(); i++)
-    {
-        unsigned long long num = h3(name_column[i]);
-        names.push_back(num);
-    }
-
-    // Imprimir la segunda columna para verificar el resultado
-    //  for (const auto &value : second_column)
-    //  {
-    //      cout << value << endl;
-    //      count++;
-    //  }
-    //  cout << count << endl;
 
     int N = 21070;
     hash_table ht_linear(N, linear_probing);
@@ -76,68 +64,88 @@ int main()
     hash_table ht_double(N, double_hashing);
     unordered_map<int, int> um;
 
-    ofstream file("quadratic_insertnames.csv");
-    for (int i = 0; i < names.size(); i++)
+///////////INSERCIONES/////////////////////////////////////
+
+    auto start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
     {
-        unsigned long long num = names[i];
-        auto start = chrono::high_resolution_clock::now();
-        ht_quadratic.insert(num);
-        auto end = chrono::high_resolution_clock::now();
-        auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-        file << i + 1 << ", " << duration << "\n";
+        unsigned long long num = id_column[i];
+        ht_linear.search(num);
     }
-    file.close();
-    cout << "listo" << endl;
-    /*     for (int i = 0; i < id_column.size(); i++)
-        {
-            unsigned long long num = id_column[i];
-            auto start = chrono::high_resolution_clock::now();
-            ht_linear.insert(num);
-            auto end = chrono::high_resolution_clock::now();
-            auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-            file << i + 1 << ", " << duration << "\n";
-        }
-        file.close();
-        std::cout << "Linear probing listo" << std::endl;
+    auto end = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    llenar_csv("linear_insert.csv", n, duration);
 
-        file.open("quadratic_insert.csv");
-        for (int i = 0; i < id_column.size(); i++)
-        {
-            unsigned long long num = id_column[i];
-            auto start = chrono::high_resolution_clock::now();
-            ht_quadratic.insert(num);
-            auto end = chrono::high_resolution_clock::now();
-            auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-            file << i + 1 << ", " << duration << "\n";
-        }
-        file.close();
-        std::cout << "quadratic probing listo" << std::endl;
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        unsigned long long num = id_column[i];
+        ht_quadratic.insert(num);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    llenar_csv("quadratic_insert.csv", n, duration);
 
-        file.open("unorderedmap_insert.csv");
-        for (int i = 0; i < id_column.size(); i++)
-        {
-            unsigned long long num = id_column[i];
-            auto start = chrono::high_resolution_clock::now();
-            um[num] = num;
-            auto end = chrono::high_resolution_clock::now();
-            auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-            file << i + 1 << ", " << duration << "\n";
-        }
-        file.close();
-        std::cout << "unordered_map listo" << std::endl;
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        unsigned long long num = id_column[i];
+        ht_double.insert(num);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    llenar_csv("doblehashing_insert.csv", n, duration);
 
-        file.open("double_insert.csv");
-        for (int i = 0; i < id_column.size(); i++)
-        {
-            unsigned long long num = id_column[i];
-            auto start = chrono::high_resolution_clock::now();
-            ht_double.insert(num);
-            auto end = chrono::high_resolution_clock::now();
-            auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-            file << i + 1 << ", " << duration << "\n";
-        }
-        file.close();
-        std::cout << "double hashing listo" << std::endl; */
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        unsigned long long num = id_column[i];
+        um[num] = num;
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    llenar_csv("unorderedmap_insert.csv", n, duration);
 
+///////////BUSQUEDAS/////////////////////////////////////
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        unsigned long long num = id_column[i];
+        ht_linear.search(num);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    llenar_csv("linear_search.csv", n, duration);
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        unsigned long long num = id_column[i];
+        ht_quadratic.search(num);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    llenar_csv("quadratic_search.csv", n, duration);
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        unsigned long long num = id_column[i];
+        ht_double.search(num);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    llenar_csv("doblehashing_search.csv", n, duration);
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        unsigned long long num = id_column[i];
+        um.find(num);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    llenar_csv("unorderedmap_search.csv", n, duration);
     return 0;
 }
