@@ -3,32 +3,54 @@
 #include <unordered_map>
 #include <chrono>
 #include <math.h>
-#include "hash_table.h"
+#include "hash_table_ids.h"
 
 using namespace std;
-
+//Numero áureo
 float A = (sqrt(5) - 1) / 2;
 
+/// @brief Primero funcion hash(metodo de division)
+/// @param k Clave
+/// @param n Tamaño tabla hash
+/// @return retorna el modulo entre k y n
 unsigned long long h1(unsigned long long k, int n)
 {
     return k % n;
 }
+/// @brief Segunda funcion hash(metodo de multiplicacion)
+/// @param k Clave
+/// @param n Tamaño tabla hash
+/// @return producto entre la parte fraccionaria de k por n
 unsigned long long h2(unsigned long long k, int n)
 {
     float a = (float)k * A;
     a -= (int)a;
     return n * a;
 }
+
+/// @brief Metodo de manejo de colisiones (Linear probing)
+/// @param k Clave a la que se le aplicara una funcion hash
+/// @param n tamaño de la tabla hash
+/// @param i Numero de intentos de indexacion
+/// @return Utiliza el metodo de division.
 int linear_probing(unsigned long long k, int n, int i)
 {
     return (h1(k, n) + i) % n;
 }
-
+/// @brief Metodo de manejo de colisiones(Quadratic probing)
+/// @param k Clave para aplicar hashing
+/// @param n tamaño de la tabla
+/// @param i numero de intento
+/// @return Utiliza el metodo de la multiplicacion
 int quadratic_probing(unsigned long long k, int n, int i)
 {
     return (h1(k, n) + i + 2 * i * i) % n;
 }
-
+/// @brief Metodo de manejo de colisiones(Double Hashing)
+/// @param k clave para aplicar hashing
+/// @param n tamaño tabla
+/// @param i numero de intento
+/// @return Utiliza ambas funciones hash
 int double_hashing(unsigned long long k, int n, int i)
 {
     return (h1(k, n) + i * (h2(k, n) + 1)) % n;
@@ -74,7 +96,7 @@ int main(int argc, char const *argv[])
     }
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("linear_insert.csv", n, duration);
+    llenar_csv("linear_insert_ids.csv", n, duration);
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
@@ -84,7 +106,7 @@ int main(int argc, char const *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("quadratic_insert.csv", n, duration);
+    llenar_csv("quadratic_insert_ids.csv", n, duration);
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
@@ -94,17 +116,17 @@ int main(int argc, char const *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("doblehashing_insert.csv", n, duration);
+    llenar_csv("duoblehashing_insert_ids.csv", n, duration);
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
     {
         unsigned long long num = id_column[i];
-        um[num] = num;
+        um.insert({num,num});
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("unorderedmap_insert.csv", n, duration);
+    llenar_csv("unorderedmap_insert_ids.csv", n, duration);
 
 ///////////BUSQUEDAS/////////////////////////////////////
 
@@ -116,7 +138,7 @@ int main(int argc, char const *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("linear_search.csv", n, duration);
+    llenar_csv("linear_search_ids.csv", n, duration);
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
@@ -126,7 +148,7 @@ int main(int argc, char const *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("quadratic_search.csv", n, duration);
+    llenar_csv("quadratic_search_ids.csv", n, duration);
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
@@ -136,7 +158,7 @@ int main(int argc, char const *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("doblehashing_search.csv", n, duration);
+    llenar_csv("doublehashing_search_ids.csv", n, duration);
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
@@ -146,6 +168,6 @@ int main(int argc, char const *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("unorderedmap_search.csv", n, duration);
+    llenar_csv("unorderedmap_search_ids.csv", n, duration);
     return 0;
 }

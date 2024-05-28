@@ -3,10 +3,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load data from CSV files
-data_linear = pd.read_csv('linear_search.csv', names=['N', 'Time'])
-data_quadratic = pd.read_csv('quadratic_search.csv', names=['N', 'Time'])
-data_double = pd.read_csv('doblehashing_search.csv', names=['N', 'Time'])  
-data_unordered = pd.read_csv('unorderedmap_search.csv', names=['N', 'Time'])
+data_linear = pd.read_csv('linear_search_ids.csv', names=['N', 'Time'])
+data_quadratic = pd.read_csv('quadratic_search_ids.csv', names=['N', 'Time'])
+data_double = pd.read_csv('doublehashing_search_ids.csv', names=['N', 'Time'])  
+data_unordered = pd.read_csv('unorderedmap_search_ids.csv', names=['N', 'Time'])
 
 # Create a new figure
 #fig, axs = plt.subplots(4, 1, figsize=(10, 24))
