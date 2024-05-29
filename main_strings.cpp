@@ -6,7 +6,12 @@
 #include <math.h>
 #include "hash_table_strings.h"
 
-//funcion simplificada de hashing de jenkins
+//Numero aureo
+float A = (sqrt(5) - 1) / 2;
+
+/// @brief Función de hash simplificada de Jenkins
+/// @param str Cadena a la que se le aplicará el hash
+/// @return Valor hash de la cadena
 unsigned long long simple_hash(const std::string& str) {
     unsigned long long hash = 0;
     for (char c : str) {
@@ -20,37 +25,60 @@ unsigned long long simple_hash(const std::string& str) {
     return hash;
 }
 
-//funcion hash 1
+/// @brief Primera función hash (método de división)
+/// @param k Clave
+/// @param n Tamaño de la tabla hash
+/// @return Resto de dividir el hash por el tamaño de la tabla
 unsigned long long h1(const std::string& k, int n) {
     unsigned long long hash = simple_hash(k);
     return hash % n;
 }
 
-//funcion hash 2
+/// @brief Segunda función hash (método de multiplicación)
+/// @param k Clave
+/// @param n Tamaño de la tabla hash
+/// @return Parte fraccionaria del producto entre el hash y el número áureo, multiplicada por el tamaño de la tabla
 unsigned long long h2(const std::string& k, int n) {
-    const float A = 0.61803398875;
     float a = simple_hash(k) * A;
-    a -= static_cast<int>(a);
+    a -= (int)a;
     return n * a;
 }
 
+/// @brief Método de manejo de colisiones (Linear probing)
+/// @param k Clave a la que se le aplicará una función hash
+/// @param n Tamaño de la tabla hash
+/// @param i Número de intentos de indexación
+/// @return Índice calculado usando el método de linear probing
 int linear_probing(const std::string& k, int n, int i)
 {
     return (h1(k, n) + i) % n;
 }
 
+/// @brief Método de manejo de colisiones (Quadratic probing)
+/// @param k Clave para aplicar hashing
+/// @param n Tamaño de la tabla
+/// @param i Número de intentos de indexación
+/// @return Índice calculado usando el método de quadratic probing
 int quadratic_probing(const std::string& k, int n, int i)
 {
     return (h1(k, n) + i + 2 * i * i) % n;
 }
 
+/// @brief Método de manejo de colisiones (Double Hashing)
+/// @param k Clave para aplicar hashing
+/// @param n Tamaño de la tabla
+/// @param i Número de intentos de indexación
+/// @return Índice calculado usando el método de double hashing
 int double_hashing(const std::string& k, int n, int i)
 {
     return (h1(k, n) + i * (h2(k, n) + 1)) % n;
 }
 
-//Funcion que hace n_inserts inserciones, el archivo csv que genera da la duracion total despues de todas las inserciones
-//Usa una hash table
+/// @brief Función que realiza inserciones en una hash table y mide el tiempo total
+/// @param hts Tabla hash en la que se realizarán las inserciones
+/// @param n_inserts Número de inserciones a realizar
+/// @param users_names Vector con los nombres de usuario
+/// @param out_file_name Nombre del archivo de salida donde se guardará la duración de las inserciones
 void test_insert(hash_table_string& hts, int n_inserts,
         std::vector<std::string> users_names, std::string out_file_name){
     
@@ -68,7 +96,12 @@ void test_insert(hash_table_string& hts, int n_inserts,
     auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     file_out << n_inserts << ", " << duration << std::endl;
 }
-//misma funcion pero que usa un unoredered_map
+
+/// @brief Función que realiza inserciones en un unordered map y mide el tiempo total
+/// @param hts Tabla hash en la que se realizarán las inserciones
+/// @param n_inserts Número de inserciones a realizar
+/// @param users_names Vector con los nombres de usuario
+/// @param out_file_name Nombre del archivo de salida donde se guardará la duración de las inserciones
 void test_insert(unordered_map<std::string, std::string>& um, int n_inserts,
         std::vector<std::string> users_names, std::string out_file_name){
     
@@ -87,7 +120,11 @@ void test_insert(unordered_map<std::string, std::string>& um, int n_inserts,
     file_out << n_inserts << ", " << duration << std::endl;
 }
 
-// Función que hace n_searches búsquedas y guarda la duración de cada búsqueda en un archivo CSV
+/// @brief Función que realiza búsquedas en una hash table y mide la duración total
+/// @param hts Tabla hash en la que se realizarán las búsquedas
+/// @param n_searches Número de búsquedas a realizar
+/// @param users_names Vector con los nombres de usuario
+/// @param out_file_name Nombre del archivo de salida donde se guardará la duración de las búsquedas
 void test_search(hash_table_string& hts, int n_searches, std::vector<std::string> users_names, std::string out_file_name) {
     // Creamos el archivo .csv
     std::ofstream file_out(out_file_name, std::ios::app);
@@ -103,7 +140,11 @@ void test_search(hash_table_string& hts, int n_searches, std::vector<std::string
     file_out << n_searches << ", " << duration << std::endl;
 }
 
-// Misma función pero que usa un unordered_map
+/// @brief Función que realiza búsquedas en un unordered map y mide la duración total
+/// @param hts Tabla hash en la que se realizarán las búsquedas
+/// @param n_searches Número de búsquedas a realizar
+/// @param users_names Vector con los nombres de usuario
+/// @param out_file_name Nombre del archivo de salida donde se guardará la duración de las búsquedas
 void test_search(std::unordered_map<std::string, std::string>& um, int n_searches, std::vector<std::string> users_names, std::string out_file_name) {
     // Creamos el archivo .csv
     std::ofstream file_out(out_file_name, std::ios::app);
@@ -119,6 +160,7 @@ void test_search(std::unordered_map<std::string, std::string>& um, int n_searche
     file_out << n_searches << ", " << duration << std::endl;
 }
 
+/// @brief Función para vaciar archivos CSV
 void vaciar_csv(){
     std::ofstream file_out("linear_insert_usernames.csv", std::ios::trunc);
     file_out.close();
