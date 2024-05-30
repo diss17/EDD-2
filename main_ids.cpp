@@ -4,9 +4,10 @@
 #include <chrono>
 #include <math.h>
 #include "hash_table_ids.h"
+#include "User.h"
 
 using namespace std;
-//Numero áureo
+// Numero áureo
 float A = (sqrt(5) - 1) / 2;
 
 /// @brief Primero funcion hash(metodo de division)
@@ -75,24 +76,40 @@ int main(int argc, char const *argv[])
     // archivo sin repeticiones ni numeros en notacion cientifica
     string filename = "universities_followers_int64.csv";
     // Crear una instancia de CSVReader
-    csv_reader csvReader(filename);
+    csv_reader archivo(filename);
 
     // Extraer la segunda columna
-    vector<unsigned long long> id_column = csvReader.extract_column_as_ull(1);
+    vector<string> university_column = archivo.extract_column(0);
+    vector<unsigned long long> id_column = archivo.extract_column_as_ull(1);
+    vector<string> username_column = archivo.extract_column(2);
+    vector<unsigned long long> number_column = archivo.extract_column_as_ull(3);
+    vector<unsigned long long> friends_column = archivo.extract_column_as_ull(4);
+    vector<unsigned long long> followers_column = archivo.extract_column_as_ull(5);
+    vector<string> created_column = archivo.extract_column(6);
 
     int N = 21070;
+    vector<User> usuarios(N);
+    for (int i = 0; i < N; i++)
+    {
+        usuarios[i].university = university_column[i];
+        usuarios[i].user_id = id_column[i];
+        usuarios[i].user_name = username_column[i];
+        usuarios[i].number_tweets = number_column[i];
+        usuarios[i].friends_count = friends_column[i];
+        usuarios[i].followers_count = followers_column[i];
+        usuarios[i].created_at = created_column[i];
+    }
     hash_table ht_linear(N, linear_probing);
     hash_table ht_quadratic(N, quadratic_probing);
     hash_table ht_double(N, double_hashing);
-    unordered_map<int, int> um;
+    unordered_map<int, User> um;
 
-///////////INSERCIONES/////////////////////////////////////
-
+    ///////////INSERCIONES/////////////////////////////////////
     auto start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
     {
-        unsigned long long num = id_column[i];
-        ht_linear.search(num);
+        unsigned long long num = usuarios[i].user_id;
+        ht_linear.insert(num);
     }
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
@@ -101,7 +118,7 @@ int main(int argc, char const *argv[])
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
     {
-        unsigned long long num = id_column[i];
+        unsigned long long num = usuarios[i].user_id;
         ht_quadratic.insert(num);
     }
     end = chrono::high_resolution_clock::now();
@@ -111,29 +128,28 @@ int main(int argc, char const *argv[])
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
     {
-        unsigned long long num = id_column[i];
+        unsigned long long num = usuarios[i].user_id;
         ht_double.insert(num);
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("duoblehashing_insert_ids.csv", n, duration);
+    llenar_csv("doublehashing_insert_ids.csv", n, duration);
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
     {
-        unsigned long long num = id_column[i];
-        um.insert({num,num});
+        um[usuarios[i].user_id] = usuarios[i];
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     llenar_csv("unorderedmap_insert_ids.csv", n, duration);
 
-///////////BUSQUEDAS/////////////////////////////////////
+    ///////////BUSQUEDAS/////////////////////////////////////
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
     {
-        unsigned long long num = id_column[i];
+        unsigned long long num = usuarios[i].user_id;
         ht_linear.search(num);
     }
     end = chrono::high_resolution_clock::now();
@@ -143,7 +159,7 @@ int main(int argc, char const *argv[])
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
     {
-        unsigned long long num = id_column[i];
+        unsigned long long num = usuarios[i].user_id;
         ht_quadratic.search(num);
     }
     end = chrono::high_resolution_clock::now();
@@ -153,7 +169,7 @@ int main(int argc, char const *argv[])
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
     {
-        unsigned long long num = id_column[i];
+        unsigned long long num = usuarios[i].user_id;
         ht_double.search(num);
     }
     end = chrono::high_resolution_clock::now();
@@ -163,7 +179,7 @@ int main(int argc, char const *argv[])
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
     {
-        unsigned long long num = id_column[i];
+        unsigned long long num = usuarios[i].user_id;
         um.find(num);
     }
     end = chrono::high_resolution_clock::now();
