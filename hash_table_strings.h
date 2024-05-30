@@ -1,38 +1,36 @@
 #include <string>
+#include "user.h"
+
 struct hash_table_string
 {
   int size;
-  std::string *table;
+  User *table;
   int (*hashing_method)(const std::string&, int, int);
 
   hash_table_string(int size, int (*hashing_method)(const std::string&, int, int)) : size(size), hashing_method(hashing_method)
   {
-    table = new std::string[size];
-    for (int i = 0; i < size; i++)
-    {
-      table[i] = "";
-    }
+    table = new User[size];
   }
 
-  void insert(const std::string& key)
+  void insert(const User& user)
   {
     int i = -1;
-    int hasingResult = 0;
+    int hashingResult;
     do{
-      hasingResult = hashing_method(key, size, i);
       i++;
-    }while (table[hasingResult] != "");
+      hashingResult = hashing_method(user.user_name, size, i);
+    }while (table[hashingResult].user_name != "");
 
-    table[hashing_method(key, size, i)] = key;
+    table[hashingResult] = user;
   }
 
-  bool search(const std::string& key)
+  bool search(const User& user)
   {
-    unsigned long long i = 0;
-    while (table[hashing_method(key, size, i)] != key && table[hashing_method(key, size, i)] != "")
+    int i = 0;
+    while (table[hashing_method(user.user_name, size, i)].user_name != user.user_name && table[hashing_method(user.user_name, size, i)].user_name != "")
     {
       i++;
     }
-    return table[hashing_method(key, size, i)] == key;
+    return table[hashing_method(user.user_name, size, i)].user_name == user.user_name;
   }
 };
