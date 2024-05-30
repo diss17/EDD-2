@@ -8,45 +8,23 @@ data_quadratic = pd.read_csv('quadratic_search_usernames.csv', names=['N', 'Time
 data_double = pd.read_csv('double_search_usernames.csv', names=['N', 'Time'])  
 data_unordered = pd.read_csv('unorderedmap_search_usernames.csv', names=['N', 'Time'])
 
-# Create a new figure
-#fig, axs = plt.subplots(4, 1, figsize=(10, 24))
+# Funcion para agrupar los datos por N y promediar el tiempo
+def agrupar(data):
+    return data.groupby('N', as_index=False).mean()
 
-plt.plot(data_linear['N'], data_linear['Time'], label='Linear', color='blue')
-plt.plot(data_quadratic['N'], data_quadratic['Time'], label='Quadratic', color='g')
-plt.plot(data_double['N'], data_double['Time'], label='Double', color='r')
-plt.plot(data_unordered['N'], data_unordered['Time'], label='Unordered', color='purple')
-plt.xlabel('Search Number')
+data_linear_promedio = agrupar(data_linear)
+data_quadratic_promedio = agrupar(data_quadratic)
+data_double_promedio = agrupar(data_double)
+data_unordered_promedio = agrupar(data_unordered)
+
+plt.plot(data_linear_promedio['N'], data_linear_promedio['Time'], label='Linear', color='blue')
+plt.plot(data_quadratic_promedio['N'], data_quadratic_promedio['Time'], label='Quadratic', color='g')
+plt.plot(data_double_promedio['N'], data_double_promedio['Time'], label='Double', color='r')
+plt.plot(data_unordered_promedio['N'], data_unordered_promedio['Time'], label='Unordered', color='purple')
+
+plt.xlabel('Insertion Number')
 plt.ylabel('Time (nanoseconds)')
-plt.title('Search time analysis')
+plt.title('Insertion time analysis')
 plt.legend()
 
-## Plot data for linear
-#axs[0].plot(data_linear['N'], data_linear['Time'], label='Linear')
-#axs[0].set_xlabel('Search Number')
-#axs[0].set_ylabel('Time (nanoseconds)')
-#axs[0].set_title('Search Time Analysis (Linear)')
-#axs[0].legend()
-#
-## Plot data for quadratic
-#axs[1].plot(data_quadratic['N'], data_quadratic['Time'], label='Quadratic')
-#axs[1].set_xlabel('Search Number')
-#axs[1].set_ylabel('Time (nanoseconds)')
-#axs[1].set_title('Search Time Analysis (Quadratic)')
-#axs[1].legend()
-#
-## Plot data for double hashing  # New block
-#axs[2].plot(data_double['N'], data_double['Time'], label='Double Hashing')
-#axs[2].set_xlabel('Search Number')
-#axs[2].set_ylabel('Time (nanoseconds)')
-#axs[2].set_title('Search Time Analysis (Double Hashing)')
-#axs[2].legend()
-#
-## Plot data for unordered map  # New block
-#axs[3].plot(data_unordered['N'], data_unordered['Time'], label='Unordered Map')
-#axs[3].set_xlabel('Search Number')
-#axs[3].set_ylabel('Time (nanoseconds)')
-#axs[3].set_title('Search Time Analysis (Unordered Map)')
-#axs[3].legend() 
-#
-#plt.tight_layout()
 plt.show()
