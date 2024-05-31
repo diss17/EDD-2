@@ -20,16 +20,11 @@ struct hash_table_usernames_abierto {
   }
 
   bool search(const User& user) {
-    int hashingResult;
-    int i = 0;
-    while(i < size) {
-      hashingResult = hashing_method(user.user_name, size, i);
-      for (User u: table[hashingResult]) {
-        if (u.user_name == user.user_name) {
-          return true;
-        }
+    int hashingResult = hashing_method(user.user_name, size, 1);
+    for (User u: table[hashingResult]) {
+      if (u.user_name == user.user_name) {
+        return true;
       }
-      i++;
     }
     return false;
   }
