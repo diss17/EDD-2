@@ -10,7 +10,6 @@
 
 //Numero aureo
 float A = (sqrt(5) - 1) / 2;
-
 /// @brief Función de hash simplificada de Jenkins
 /// @param str Cadena a la que se le aplicará el hash
 /// @return Valor hash de la cadena
@@ -26,7 +25,6 @@ unsigned long long simple_hash(const std::string& str) {
     hash += (hash << 15);
     return hash;
 }
-
 /// @brief Primera función hash (método de división)
 /// @param k Clave
 /// @param n Tamaño de la tabla hash
@@ -246,31 +244,16 @@ int main(int argc, char *argv[])
         usuarios[i].created_at = created_column[i];
     }
 
-    hash_table_usernames_abierto hta_linear(N, linear_probing);
-    hash_table_usernames_abierto hta_quadratic(N, quadratic_probing);
-    hash_table_usernames_abierto hta_double(N, double_hashing);
+    hash_table_usernames_abierto hta(N);
     std::unordered_map<std::string, User> um;
     std::ofstream file("results.csv", std::ios::app);
     
     //INSERCIONES 
-    double duration = test_insert(hta_linear, n, usuarios);
-    file << "hashing_abierto_usernames" << ";" << "linear_insert" << ";" << n << ";" << duration << std::endl;
-    duration = test_insert(hta_quadratic, n, usuarios);
-    file << "hashing_abierto_usernames" << ";" << "quadratic_insert" << ";" << n << ";" << duration << std::endl;
-    duration = test_insert(um, n, usuarios);
-    file << "unordered_map" << ";" << "unorderedmap_insert" << ";" << n << ";" << duration << std::endl;
-    duration = test_insert(hta_double, n, usuarios);
-    file << "hashing_abierto_usernames" << ";" << "double_insert" << ";" << n << ";" << duration << std::endl;  
-
+    double duration = test_insert(hta, n, usuarios);
+    file << "hashing_abierto_usernames" << ";" << "hashing_abierto_insert" << ";" << n << ";" << duration << std::endl;
     //BUSQUEDAS
-    duration = test_search(hta_linear, n, usuarios);
-    file << "hashing_abierto_usernames" << ";" << "linear_search" << ";" << n << ";" << duration << std::endl;
-    duration = test_search(hta_quadratic, n, usuarios);
-    file << "hashing_abierto_usernames" << ";" << "quadratic_search" << ";" << n << ";" << duration << std::endl;
-    duration = test_search(um, n, usuarios);
-    file << "unordered_map" << ";" << "unorderedmap_search" << ";" << n << ";" << duration << std::endl;
-    duration = test_search(hta_double, n, usuarios);
-    file << "hashing_abierto_usernames" << ";" << "double_search" << ";" << n << ";" << duration << std::endl;
+    duration = test_search(hta, n, usuarios);
+    file << "hashing_abierto_usernames" << ";" << "hashing_abierto_search" << ";" << n << ";" << duration << std::endl;
     
     hash_table_string htc_linear(N, linear_probing);
     hash_table_string htc_quadratic(N, quadratic_probing);
