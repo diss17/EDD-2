@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Leer los datos desde el archivo CSV
-df = pd.read_csv('results_names.csv', sep=';', names=["hash_type", "operation", "n", "duration"])
+df = pd.read_csv('results_ids.csv', sep=';', names=["hash_type", "operation", "n", "duration"])
 
 # Convertir la columna 'duration' a valores numéricos
 df['duration'] = pd.to_numeric(df['duration'])

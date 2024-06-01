@@ -4,10 +4,11 @@
 #include <chrono>
 #include <math.h>
 #include "hash_table_ids.h"
+#include "hash_table_ids_abierto.h"
 #include "User.h"
 
 using namespace std;
-// Numero áureo
+// Numero aureo
 float A = (sqrt(5) - 1) / 2;
 
 /// @brief Primero funcion hash(metodo de division)
@@ -56,13 +57,32 @@ int double_hashing(unsigned long long k, int n, int i)
 {
     return (h1(k, n) + i * (h2(k, n) + 1)) % n;
 }
-// Metodo para llenar el archivo con el numero de elementos a medir y su tiempo respectivo
-void llenar_csv(const string &filename, int n, long long duration)
+/// @brief Función para vaciar archivos CSV
+void vaciar_csv()
 {
-    ofstream file;
-    file.open(filename, ios_base::app);
-    file << n << "," << duration << endl;
-    file.close();
+    std::ofstream file_out("linear_insert_ids.csv", std::ios::trunc);
+    file_out.close();
+    file_out.open("quadratic_insert_ids.csv", std::ios::trunc);
+    file_out << std::endl;
+    file_out.close();
+    file_out.open("unorderedmap_insert_ids.csv", std::ios::trunc);
+    file_out << std::endl;
+    file_out.close();
+    file_out.open("double_insert_ids.csv", std::ios::trunc);
+    file_out << std::endl;
+    file_out.close();
+    file_out.open("linear_search_ids.csv", std::ios::trunc);
+    file_out << std::endl;
+    file_out.close();
+    file_out.open("quadratic_search_ids.csv", std::ios::trunc);
+    file_out << std::endl;
+    file_out.close();
+    file_out.open("unorderedmap_search_ids.csv", std::ios::trunc);
+    file_out << std::endl;
+    file_out.close();
+    file_out.open("double_search_ids.csv", std::ios::trunc);
+    file_out << std::endl;
+    file_out.close();
 }
 int main(int argc, char const *argv[])
 {
@@ -77,8 +97,10 @@ int main(int argc, char const *argv[])
     string filename = "universities_followers_int64.csv";
     // Crear una instancia de CSVReader
     csv_reader archivo(filename);
+    // Definimos el tamano de la tabla hash
+    int N = 21070;
 
-    // Extraer la segunda columna
+    // Extraer columnas de dataset para asignar su tipo segun la estructura user.h
     vector<string> university_column = archivo.extract_column(0);
     vector<unsigned long long> id_column = archivo.extract_column_as_ull(1);
     vector<string> username_column = archivo.extract_column(2);
@@ -87,7 +109,10 @@ int main(int argc, char const *argv[])
     vector<unsigned long long> followers_column = archivo.extract_column_as_ull(5);
     vector<string> created_column = archivo.extract_column(6);
 
-    int N = 21070;
+    hash_table_ids_abierto hta(N);
+
+    std::ofstream file("results_ids.csv", std::ios::app);
+
     vector<User> usuarios(N);
     for (int i = 0; i < N; i++)
     {
@@ -103,17 +128,38 @@ int main(int argc, char const *argv[])
     hash_table ht_quadratic(N, quadratic_probing);
     hash_table ht_double(N, double_hashing);
     unordered_map<int, User> um;
+    //////////////////HASHING ABIERTO////////////////////////////
 
-    ///////////INSERCIONES/////////////////////////////////////
+    // INSERCIONES
     auto start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        hta.insert(usuarios[i]);
+    }
+    auto end = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    file << "hashing_abierto_ids" << ";" << "hashing_abierto_insert" << ";" << n << ";" << duration << endl;
+    // BUSQUEDAS
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        hta.search(usuarios[i]);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    file << "hashing_abierto_ids" << ";" << "hashing_abierto_search" << ";" << n << ";" << duration << endl;
+
+    ////////////HASHING CERRADO////////////////////////////////
+    ///////////INSERCIONES/////////////////////////////////////
+    start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
     {
         unsigned long long num = usuarios[i].user_id;
         ht_linear.insert(num);
     }
-    auto end = chrono::high_resolution_clock::now();
-    auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("linear_insert_ids.csv", n, duration);
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    file << "hashing_cerrado_ids" << ";" << "linear_insert" << ";" << n << ";" << duration << endl;
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
@@ -123,7 +169,7 @@ int main(int argc, char const *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("quadratic_insert_ids.csv", n, duration);
+    file << "hashing_cerrado_ids" << ";" << "quadratic_insert" << ";" << n << ";" << duration << endl;
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
@@ -133,7 +179,7 @@ int main(int argc, char const *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("doublehashing_insert_ids.csv", n, duration);
+    file << "hashing_cerrado_ids" << ";" << "double_insert" << ";" << n << ";" << duration << endl;
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
@@ -142,7 +188,7 @@ int main(int argc, char const *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("unorderedmap_insert_ids.csv", n, duration);
+    file << "hashing_cerrado_ids" << ";" << "unorderedmap_insert" << ";" << n << ";" << duration << std::endl;
 
     ///////////BUSQUEDAS/////////////////////////////////////
 
@@ -154,7 +200,7 @@ int main(int argc, char const *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("linear_search_ids.csv", n, duration);
+    file << "hashing_cerrado_ids" << ";" << "linear_search" << ";" << n << ";" << duration << std::endl;
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
@@ -164,7 +210,7 @@ int main(int argc, char const *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("quadratic_search_ids.csv", n, duration);
+    file << "hashing_cerrado_ids" << ";" << "quadratic_search" << ";" << n << ";" << duration << std::endl;
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
@@ -174,7 +220,7 @@ int main(int argc, char const *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("doublehashing_search_ids.csv", n, duration);
+    file << "hashing_cerrado_ids" << ";" << "double_search" << ";" << n << ";" << duration << std::endl;
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
@@ -184,6 +230,6 @@ int main(int argc, char const *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    llenar_csv("unorderedmap_search_ids.csv", n, duration);
+    file << "hashing_cerrado_ids" << ";" << "unorderedmap_search" << ";" << n << ";" << duration << std::endl;
     return 0;
 }

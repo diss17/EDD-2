@@ -8,14 +8,16 @@
 #include "hash_table_usernames_abierto.h"
 #include "user.h"
 
-//Numero aureo
+// Numero aureo
 float A = (sqrt(5) - 1) / 2;
 /// @brief Función de hash simplificada de Jenkins
 /// @param str Cadena a la que se le aplicará el hash
 /// @return Valor hash de la cadena
-unsigned long long simple_hash(const std::string& str) {
+unsigned long long simple_hash(const std::string &str)
+{
     unsigned long long hash = 0;
-    for (char c : str) {
+    for (char c : str)
+    {
         hash += static_cast<unsigned long long>(c);
         hash += (hash << 10);
         hash ^= (hash >> 6);
@@ -29,7 +31,8 @@ unsigned long long simple_hash(const std::string& str) {
 /// @param k Clave
 /// @param n Tamaño de la tabla hash
 /// @return Resto de dividir el hash por el tamaño de la tabla
-unsigned long long h1(const std::string& k, int n) {
+unsigned long long h1(const std::string &k, int n)
+{
     unsigned long long hash = simple_hash(k);
     return hash % n;
 }
@@ -38,7 +41,8 @@ unsigned long long h1(const std::string& k, int n) {
 /// @param k Clave
 /// @param n Tamaño de la tabla hash
 /// @return Parte fraccionaria del producto entre el hash y el número áureo, multiplicada por el tamaño de la tabla
-unsigned long long h2(const std::string& k, int n) {
+unsigned long long h2(const std::string &k, int n)
+{
     float a = simple_hash(k) * A;
     a -= (int)a;
     return n * a;
@@ -49,7 +53,7 @@ unsigned long long h2(const std::string& k, int n) {
 /// @param n Tamaño de la tabla hash
 /// @param i Número de intentos de indexación
 /// @return Índice calculado usando el método de linear probing
-int linear_probing(const std::string& k, int n, int i)
+int linear_probing(const std::string &k, int n, int i)
 {
     return (h1(k, n) + i) % n;
 }
@@ -59,7 +63,7 @@ int linear_probing(const std::string& k, int n, int i)
 /// @param n Tamaño de la tabla
 /// @param i Número de intentos de indexación
 /// @return Índice calculado usando el método de quadratic probing
-int quadratic_probing(const std::string& k, int n, int i)
+int quadratic_probing(const std::string &k, int n, int i)
 {
     return (h1(k, n) + i + 2 * i * i) % n;
 }
@@ -69,22 +73,21 @@ int quadratic_probing(const std::string& k, int n, int i)
 /// @param n Tamaño de la tabla
 /// @param i Número de intentos de indexación
 /// @return Índice calculado usando el método de double hashing
-int double_hashing(const std::string& k, int n, int i)
+int double_hashing(const std::string &k, int n, int i)
 {
     return (h1(k, n) + i * (h2(k, n) + 1)) % n;
 }
-
 
 /// @brief Función que realiza inserciones en una hash table y mide el tiempo total
 /// @param hts Tabla hash en la que se realizarán las inserciones
 /// @param n_inserts Número de inserciones a realizar
 /// @param users_names Vector con los nombres de usuario
 /// @param out_file_name Nombre del archivo de salida donde se guardará la duración de las inserciones
-double test_insert(hash_table_string& hts, int n_inserts,
-       std::vector<User> users){
-     
-    
-    //Hacemos las inserciones
+double test_insert(hash_table_string &hts, int n_inserts,
+                   std::vector<User> users)
+{
+
+    // Hacemos las inserciones
     auto start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n_inserts; i++)
     {
@@ -92,7 +95,7 @@ double test_insert(hash_table_string& hts, int n_inserts,
     }
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    return duration;   
+    return duration;
 }
 
 /// @brief Función que realiza búsquedas en una hash table y mide la duración total
@@ -100,16 +103,18 @@ double test_insert(hash_table_string& hts, int n_inserts,
 /// @param n_searches Número de búsquedas a realizar
 /// @param users_names Vector con los nombres de usuario
 /// @param out_file_name Nombre del archivo de salida donde se guardará la duración de las búsquedas
-double test_search(hash_table_string& hts, int n_searches, std::vector<User> users) {
-    
+double test_search(hash_table_string &hts, int n_searches, std::vector<User> users)
+{
+
     // Hacemos las búsquedas
     auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < n_searches; i++) {
-        hts.search(users[i]);  
+    for (int i = 0; i < n_searches; i++)
+    {
+        hts.search(users[i]);
     }
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-    return duration;    
+    return duration;
 }
 
 /// @brief Función que realiza inserciones en una hash table y mide el tiempo total
@@ -117,10 +122,11 @@ double test_search(hash_table_string& hts, int n_searches, std::vector<User> use
 /// @param n_inserts Número de inserciones a realizar
 /// @param users_names Vector con los nombres de usuario
 /// @param out_file_name Nombre del archivo de salida donde se guardará la duración de las inserciones
-double test_insert(hash_table_usernames_abierto& hts, int n_inserts,
-       std::vector<User> users){
-        
-    //Hacemos las inserciones
+double test_insert(hash_table_usernames_abierto &hts, int n_inserts,
+                   std::vector<User> users)
+{
+
+    // Hacemos las inserciones
     auto start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n_inserts; i++)
     {
@@ -136,10 +142,11 @@ double test_insert(hash_table_usernames_abierto& hts, int n_inserts,
 /// @param n_inserts Número de inserciones a realizar
 /// @param users_names Vector con los nombres de usuario
 /// @param out_file_name Nombre del archivo de salida donde se guardará la duración de las inserciones
-double test_insert(unordered_map<std::string, User>& um, int n_inserts,
-        std::vector<User> users){
-        
-    //Hacemos las inserciones
+double test_insert(unordered_map<std::string, User> &um, int n_inserts,
+                   std::vector<User> users)
+{
+
+    // Hacemos las inserciones
     auto start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n_inserts; i++)
     {
@@ -155,12 +162,14 @@ double test_insert(unordered_map<std::string, User>& um, int n_inserts,
 /// @param n_searches Número de búsquedas a realizar
 /// @param users_names Vector con los nombres de usuario
 /// @param out_file_name Nombre del archivo de salida donde se guardará la duración de las búsquedas
-double test_search(hash_table_usernames_abierto& hts, int n_searches, std::vector<User> users) {
+double test_search(hash_table_usernames_abierto &hts, int n_searches, std::vector<User> users)
+{
 
     // Hacemos las búsquedas
     auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < n_searches; i++) {
-        hts.search(users[i]);  
+    for (int i = 0; i < n_searches; i++)
+    {
+        hts.search(users[i]);
     }
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
@@ -172,11 +181,13 @@ double test_search(hash_table_usernames_abierto& hts, int n_searches, std::vecto
 /// @param n_searches Número de búsquedas a realizar
 /// @param users_names Vector con los nombres de usuario
 /// @param out_file_name Nombre del archivo de salida donde se guardará la duración de las búsquedas
-double test_search(std::unordered_map<std::string, User>& um, int n_searches, std::vector<User> users) {
+double test_search(std::unordered_map<std::string, User> &um, int n_searches, std::vector<User> users)
+{
 
     // Hacemos las búsquedas
     auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < n_searches; i++) {
+    for (int i = 0; i < n_searches; i++)
+    {
         um.find(users[i].user_name);
     }
     auto end = std::chrono::high_resolution_clock::now();
@@ -185,7 +196,8 @@ double test_search(std::unordered_map<std::string, User>& um, int n_searches, st
 }
 
 /// @brief Función para vaciar archivos CSV
-void vaciar_csv(){
+void vaciar_csv()
+{
     std::ofstream file_out("linear_insert_usernames.csv", std::ios::trunc);
     file_out.close();
     file_out.open("quadratic_insert_usernames.csv", std::ios::trunc);
@@ -231,10 +243,11 @@ int main(int argc, char *argv[])
     vector<unsigned long long> friends_column = archivo.extract_column_as_ull(4);
     vector<unsigned long long> followers_column = archivo.extract_column_as_ull(5);
     vector<std::string> created_column = archivo.extract_column(6);
-    
+
     int N = 21070;
     vector<User> usuarios(N);
-    for(int i = 0; i < N; i++){
+    for (int i = 0; i < N; i++)
+    {
         usuarios[i].university = university_column[i];
         usuarios[i].user_id = id_column[i];
         usuarios[i].user_name = username_column[i];
@@ -246,33 +259,37 @@ int main(int argc, char *argv[])
 
     hash_table_usernames_abierto hta(N);
     std::unordered_map<std::string, User> um;
-    std::ofstream file("results.csv", std::ios::app);
-    
-    //INSERCIONES 
+    std::ofstream file("results_names.csv", std::ios::app);
+
+    // INSERCIONES
     double duration = test_insert(hta, n, usuarios);
     file << "hashing_abierto_usernames" << ";" << "hashing_abierto_insert" << ";" << n << ";" << duration << std::endl;
-    //BUSQUEDAS
+    // BUSQUEDAS
     duration = test_search(hta, n, usuarios);
     file << "hashing_abierto_usernames" << ";" << "hashing_abierto_search" << ";" << n << ";" << duration << std::endl;
-    
+
     hash_table_string htc_linear(N, linear_probing);
     hash_table_string htc_quadratic(N, quadratic_probing);
     hash_table_string htc_double(N, double_hashing);
-    
-    //INSERCIONES 
+
+    // INSERCIONES
     duration = test_insert(htc_linear, n, usuarios);
     file << "hashing_cerrado_usernames" << ";" << "linear_insert" << ";" << n << ";" << duration << std::endl;
     duration = test_insert(htc_quadratic, n, usuarios);
     file << "hashing_cerrado_usernames" << ";" << "quadratic_insert" << ";" << n << ";" << duration << std::endl;
     duration = test_insert(htc_double, n, usuarios);
-    file << "hashing_cerrado_usernames" << ";" << "double_insert" << ";" << n << ";" << duration << std::endl;  
+    file << "hashing_cerrado_usernames" << ";" << "double_insert" << ";" << n << ";" << duration << std::endl;
+    duration = test_insert(um, n, usuarios);
+    file << "hashing_cerrado_usernames" << ";" << "unorderedmap_insert" << ";" << n << ";" << duration << std::endl;
 
-    //BUSQUEDAS
+    // BUSQUEDAS
     duration = test_search(htc_linear, n, usuarios);
     file << "hashing_cerrado_usernames" << ";" << "linear_search" << ";" << n << ";" << duration << std::endl;
     duration = test_search(htc_quadratic, n, usuarios);
     file << "hashing_cerrado_usernames" << ";" << "quadratic_search" << ";" << n << ";" << duration << std::endl;
     duration = test_search(htc_double, n, usuarios);
     file << "hashing_cerrado_usernames" << ";" << "double_search" << ";" << n << ";" << duration << std::endl;
+    duration = test_search(um, n, usuarios);
+    file << "hashing_cerrado_usernames" << ";" << "unorderedmap_search" << ";" << n << ";" << duration << std::endl;
     return 0;
 }
