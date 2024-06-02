@@ -241,8 +241,9 @@ int main(int argc, char *argv[])
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     file << "hashing_cerrado_usernames" << ";" << "unorderedmap_search" << ";" << n << ";" << duration << std::endl;
-    
-    std::ofstream file2("results_names_inventados.csv", std::ios::app);
+    file.close();
+
+    std::ofstream file2("results_names_random.csv", std::ios::app);
     ///////////////BUSQUEDA USUARIOS INVENTADOS////////////////////////
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)

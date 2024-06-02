@@ -31,4 +31,4 @@ def create_csv(filename, rows):
         for _ in range(rows):
             writer.writerow([random_university(), random_user_id(), random_user_name(), random_number(), random_number(), random_number(), random_date('2005-01-01', '2023-12-31')])
 
-create_csv('universities_followers_random.csv', 21071)  # Create a CSV file with 100 rows of random data
+create_csv('universities_followers_random.csv', 21071)  # Create a CSV file with 21071 rows of random data

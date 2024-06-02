@@ -44,20 +44,20 @@ plt.xlabel('Cantidad de Datos (n)')
 #plt.show()
 
 # Leer los datos desde el archivo CSV
-df_inventados = pd.read_csv('results_names_inventados.csv', sep=';', names=["hash_type", "operation", "n", "duration"])
+df_random = pd.read_csv('results_names_random.csv', sep=';', names=["hash_type", "operation", "n", "duration"])
 
 # Convertir la columna 'duration' a valores numéricos
-df_inventados['duration'] = pd.to_numeric(df_inventados['duration'])
+df_random['duration'] = pd.to_numeric(df_random['duration'])
 
 # Calcular el promedio de los tiempos de duración para cada combinación de hash_type, operation y n
-avg_df_inventados = df_inventados.groupby(['hash_type', 'operation', 'n']).mean().reset_index()
+avg_df_random = df_random.groupby(['hash_type', 'operation', 'n']).mean().reset_index()
 
 # Crear subgráficas para inserciones y búsquedas
 fig, ax = plt.subplots(1, 1, figsize=(12, 10), sharex=True)
 
 # Graficar los tiempos de búsqueda promedio
-search_df_inventados = avg_df_inventados[avg_df_inventados['operation'].str.contains('search')]
-for key, grp in search_df_inventados.groupby(['hash_type', 'operation']):
+search_df_random = avg_df_random[avg_df_random['operation'].str.contains('search')]
+for key, grp in search_df_random.groupby(['hash_type', 'operation']):
     ax.plot(grp['n'], grp['duration'], marker='o', linestyle='-', label=f'{key}')
 
 ax.set_title('Tiempos de Búsqueda Promedio')

@@ -83,9 +83,18 @@ int main(int argc, char const *argv[])
     vector<unsigned long long> followers_column = archivo.extract_column_as_ull(5);
     vector<string> created_column = archivo.extract_column(6);
 
+    // Extraer columnas generadas random para asignar su tipo segun la estructura user.h
+    vector<string> university_column_random = archivo_random.extract_column(0);
+    vector<unsigned long long> id_column_random = archivo_random.extract_column_as_ull(1);
+    vector<string> username_column_random = archivo_random.extract_column(2);
+    vector<unsigned long long> number_column_random = archivo_random.extract_column_as_ull(3);
+    vector<unsigned long long> friends_column_random = archivo_random.extract_column_as_ull(4);
+    vector<unsigned long long> followers_column_random = archivo_random.extract_column_as_ull(5);
+    vector<string> created_column_random = archivo_random.extract_column(6);
+
     int N = 21070;
     vector<User> usuarios(N);
-    vector<User> usuarios_randoms(10);
+    vector<User> usuarios_randoms(n);
     for (int i = 0; i < N; i++)
     {
         usuarios[i].university = university_column[i];
@@ -96,6 +105,18 @@ int main(int argc, char const *argv[])
         usuarios[i].followers_count = followers_column[i];
         usuarios[i].created_at = created_column[i];
     }
+
+    for (int i = 0; i < n; i++)
+    {
+        usuarios_randoms[i].university = university_column_random[i];
+        usuarios_randoms[i].user_id = id_column_random[i];
+        usuarios_randoms[i].user_name = username_column_random[i];
+        usuarios_randoms[i].number_tweets = number_column_random[i];
+        usuarios_randoms[i].friends_count = friends_column_random[i];
+        usuarios_randoms[i].followers_count = followers_column_random[i];
+        usuarios_randoms[i].created_at = created_column_random[i];
+    }
+    
     hash_table_ids_abierto hta(N);
     std::ofstream file("results_ids.csv", std::ios::app);
 
@@ -129,7 +150,7 @@ int main(int argc, char const *argv[])
     // BUSQUEDAS DE USERS NO EXISTENTES CON HASHING ABIERTO
 
         start = chrono::high_resolution_clock::now();
-    for (int i = 0; i < usuarios_randoms.size(); i++)
+    for (int i = 0; i < n; i++)
     {
         hta.search(usuarios_randoms[i]);
     }
@@ -215,7 +236,7 @@ int main(int argc, char const *argv[])
 
     //////////////////BUSQUEDAS DE USUARIOS NO EXISTENTES EN LA TABLA HASH////////////////////////////////////
     start = chrono::high_resolution_clock::now();
-    for (int i = 0; i < usuarios_randoms.size(); i++)
+    for (int i = 0; i < n; i++)
     {
         ht_linear.search(usuarios_randoms[i]);
     }
@@ -224,7 +245,7 @@ int main(int argc, char const *argv[])
     file1 << "hashing_cerrado_ids" << ";" << "linear_randomsearch" << ";" << usuarios_randoms.size() << ";" << duration << std::endl;
 
     start = chrono::high_resolution_clock::now();
-    for (int i = 0; i < usuarios_randoms.size(); i++)
+    for (int i = 0; i < n; i++)
     {
         ht_quadratic.search(usuarios_randoms[i]);
     }
@@ -233,7 +254,7 @@ int main(int argc, char const *argv[])
     file1 << "hashing_cerrado_ids" << ";" << "quadratic_randomsearch" << ";" << usuarios_randoms.size() << ";" << duration << std::endl;
 
     start = chrono::high_resolution_clock::now();
-    for (int i = 0; i < usuarios_randoms.size(); i++)
+    for (int i = 0; i < n; i++)
     {
         ht_double.search(usuarios_randoms[i]);
     }
@@ -242,10 +263,9 @@ int main(int argc, char const *argv[])
     file1 << "hashing_cerrado_ids" << ";" << "double_randomsearch" << ";" << usuarios_randoms.size() << ";" << duration << std::endl;
 
     start = chrono::high_resolution_clock::now();
-    for (int i = 0; i < usuarios_randoms.size(); i++)
+    for (int i = 0; i < n; i++)
     {
-        unsigned long long num = usuarios_randoms[i].user_id;
-        um.find(num);
+        um.find(usuarios_randoms[i].user_id);
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
