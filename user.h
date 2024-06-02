@@ -11,6 +11,7 @@ struct User {
     int friends_count;
     int followers_count;
     std::string created_at;
+    User() : university(""), user_id(0), user_name(""), number_tweets(0), friends_count(0), followers_count(0), created_at("") {}
 };
 
 #endif

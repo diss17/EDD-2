@@ -78,151 +78,6 @@ int double_hashing(const std::string &k, int n, int i)
     return (h1(k, n) + i * (h2(k, n) + 1)) % n;
 }
 
-/// @brief Función que realiza inserciones en una hash table y mide el tiempo total
-/// @param hts Tabla hash en la que se realizarán las inserciones
-/// @param n_inserts Número de inserciones a realizar
-/// @param users_names Vector con los nombres de usuario
-/// @param out_file_name Nombre del archivo de salida donde se guardará la duración de las inserciones
-double test_insert(hash_table_string &hts, int n_inserts,
-                   std::vector<User> users)
-{
-
-    // Hacemos las inserciones
-    auto start = chrono::high_resolution_clock::now();
-    for (int i = 0; i < n_inserts; i++)
-    {
-        hts.insert(users[i]);
-    }
-    auto end = chrono::high_resolution_clock::now();
-    auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    return duration;
-}
-
-/// @brief Función que realiza búsquedas en una hash table y mide la duración total
-/// @param hts Tabla hash en la que se realizarán las búsquedas
-/// @param n_searches Número de búsquedas a realizar
-/// @param users_names Vector con los nombres de usuario
-/// @param out_file_name Nombre del archivo de salida donde se guardará la duración de las búsquedas
-double test_search(hash_table_string &hts, int n_searches, std::vector<User> users)
-{
-
-    // Hacemos las búsquedas
-    auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < n_searches; i++)
-    {
-        hts.search(users[i]);
-    }
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-    return duration;
-}
-
-/// @brief Función que realiza inserciones en una hash table y mide el tiempo total
-/// @param hts Tabla hash en la que se realizarán las inserciones
-/// @param n_inserts Número de inserciones a realizar
-/// @param users_names Vector con los nombres de usuario
-/// @param out_file_name Nombre del archivo de salida donde se guardará la duración de las inserciones
-double test_insert(hash_table_usernames_abierto &hts, int n_inserts,
-                   std::vector<User> users)
-{
-
-    // Hacemos las inserciones
-    auto start = chrono::high_resolution_clock::now();
-    for (int i = 0; i < n_inserts; i++)
-    {
-        hts.insert(users[i]);
-    }
-    auto end = chrono::high_resolution_clock::now();
-    auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    return duration;
-}
-
-/// @brief Función que realiza inserciones en un unordered map y mide el tiempo total
-/// @param hts Tabla hash en la que se realizarán las inserciones
-/// @param n_inserts Número de inserciones a realizar
-/// @param users_names Vector con los nombres de usuario
-/// @param out_file_name Nombre del archivo de salida donde se guardará la duración de las inserciones
-double test_insert(unordered_map<std::string, User> &um, int n_inserts,
-                   std::vector<User> users)
-{
-
-    // Hacemos las inserciones
-    auto start = chrono::high_resolution_clock::now();
-    for (int i = 0; i < n_inserts; i++)
-    {
-        um[users[i].user_name] = users[i];
-    }
-    auto end = chrono::high_resolution_clock::now();
-    auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    return duration;
-}
-
-/// @brief Función que realiza búsquedas en una hash table y mide la duración total
-/// @param hts Tabla hash en la que se realizarán las búsquedas
-/// @param n_searches Número de búsquedas a realizar
-/// @param users_names Vector con los nombres de usuario
-/// @param out_file_name Nombre del archivo de salida donde se guardará la duración de las búsquedas
-double test_search(hash_table_usernames_abierto &hts, int n_searches, std::vector<User> users)
-{
-
-    // Hacemos las búsquedas
-    auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < n_searches; i++)
-    {
-        hts.search(users[i]);
-    }
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-    return duration;
-}
-
-/// @brief Función que realiza búsquedas en un unordered map y mide la duración total
-/// @param hts Tabla hash en la que se realizarán las búsquedas
-/// @param n_searches Número de búsquedas a realizar
-/// @param users_names Vector con los nombres de usuario
-/// @param out_file_name Nombre del archivo de salida donde se guardará la duración de las búsquedas
-double test_search(std::unordered_map<std::string, User> &um, int n_searches, std::vector<User> users)
-{
-
-    // Hacemos las búsquedas
-    auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < n_searches; i++)
-    {
-        um.find(users[i].user_name);
-    }
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-    return duration;
-}
-
-/// @brief Función para vaciar archivos CSV
-void vaciar_csv()
-{
-    std::ofstream file_out("linear_insert_usernames.csv", std::ios::trunc);
-    file_out.close();
-    file_out.open("quadratic_insert_usernames.csv", std::ios::trunc);
-    file_out << std::endl;
-    file_out.close();
-    file_out.open("unorderedmap_insert_usernames.csv", std::ios::trunc);
-    file_out << std::endl;
-    file_out.close();
-    file_out.open("double_insert_usernames.csv", std::ios::trunc);
-    file_out << std::endl;
-    file_out.close();
-    file_out.open("linear_search_usernames.csv", std::ios::trunc);
-    file_out << std::endl;
-    file_out.close();
-    file_out.open("quadratic_search_usernames.csv", std::ios::trunc);
-    file_out << std::endl;
-    file_out.close();
-    file_out.open("unorderedmap_search_usernames.csv", std::ios::trunc);
-    file_out << std::endl;
-    file_out.close();
-    file_out.open("double_search_usernames.csv", std::ios::trunc);
-    file_out << std::endl;
-    file_out.close();
-}
-
 int main(int argc, char *argv[])
 {
     if (argc < 2)
@@ -236,6 +91,8 @@ int main(int argc, char *argv[])
     // archivo sin repeticiones ni numeros en notacion cientifica
     std::string filename = "universities_followers_int64.csv";
     csv_reader archivo(filename);
+    
+    // Extraer columnas del archivo CSV
     vector<std::string> university_column = archivo.extract_column(0);
     vector<unsigned long long> id_column = archivo.extract_column_as_ull(1);
     vector<std::string> username_column = archivo.extract_column(2);
@@ -244,8 +101,10 @@ int main(int argc, char *argv[])
     vector<unsigned long long> followers_column = archivo.extract_column_as_ull(5);
     vector<std::string> created_column = archivo.extract_column(6);
 
+    // Crear vector de usuarios
     int N = 21070;
     vector<User> usuarios(N);
+    // Llenar el vector de usuarios
     for (int i = 0; i < N; i++)
     {
         usuarios[i].university = university_column[i];
@@ -260,36 +119,105 @@ int main(int argc, char *argv[])
     hash_table_usernames_abierto hta(N);
     std::unordered_map<std::string, User> um;
     std::ofstream file("results_names.csv", std::ios::app);
+    //////////////////HASHING ABIERTO////////////////////////////
 
-    // INSERCIONES
-    double duration = test_insert(hta, n, usuarios);
+    ///////////INSERCIONES/////////////////////////////////////
+    auto start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        hta.insert(usuarios[i]);
+    }
+    auto end = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     file << "hashing_abierto_usernames" << ";" << "hashing_abierto_insert" << ";" << n << ";" << duration << std::endl;
-    // BUSQUEDAS
-    duration = test_search(hta, n, usuarios);
+
+    ///////////BUSQUEDAS/////////////////////////////////////
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        hta.search(usuarios[i]);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     file << "hashing_abierto_usernames" << ";" << "hashing_abierto_search" << ";" << n << ";" << duration << std::endl;
 
+    //////////////////HASHING CERRADO////////////////////////////
     hash_table_string htc_linear(N, linear_probing);
     hash_table_string htc_quadratic(N, quadratic_probing);
     hash_table_string htc_double(N, double_hashing);
 
-    // INSERCIONES
-    duration = test_insert(htc_linear, n, usuarios);
+    ///////////INSERCIONES/////////////////////////////////////
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        htc_linear.insert(usuarios[i]);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     file << "hashing_cerrado_usernames" << ";" << "linear_insert" << ";" << n << ";" << duration << std::endl;
-    duration = test_insert(htc_quadratic, n, usuarios);
+    
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        htc_quadratic.insert(usuarios[i]);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     file << "hashing_cerrado_usernames" << ";" << "quadratic_insert" << ";" << n << ";" << duration << std::endl;
-    duration = test_insert(htc_double, n, usuarios);
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        htc_double.insert(usuarios[i]);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     file << "hashing_cerrado_usernames" << ";" << "double_insert" << ";" << n << ";" << duration << std::endl;
-    duration = test_insert(um, n, usuarios);
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        um[usuarios[i].user_name] = usuarios[i];
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     file << "hashing_cerrado_usernames" << ";" << "unorderedmap_insert" << ";" << n << ";" << duration << std::endl;
 
-    // BUSQUEDAS
-    duration = test_search(htc_linear, n, usuarios);
+    ///////////BUSQUEDAS/////////////////////////////////////
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        htc_linear.search(usuarios[i]);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     file << "hashing_cerrado_usernames" << ";" << "linear_search" << ";" << n << ";" << duration << std::endl;
-    duration = test_search(htc_quadratic, n, usuarios);
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        htc_quadratic.search(usuarios[i]);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     file << "hashing_cerrado_usernames" << ";" << "quadratic_search" << ";" << n << ";" << duration << std::endl;
-    duration = test_search(htc_double, n, usuarios);
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        htc_double.search(usuarios[i]);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();    
     file << "hashing_cerrado_usernames" << ";" << "double_search" << ";" << n << ";" << duration << std::endl;
-    duration = test_search(um, n, usuarios);
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        um.find(usuarios[i].user_name);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     file << "hashing_cerrado_usernames" << ";" << "unorderedmap_search" << ";" << n << ";" << duration << std::endl;
     return 0;
 }

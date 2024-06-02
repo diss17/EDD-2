@@ -10,6 +10,10 @@ struct hash_table_string
   hash_table_string(int size, int (*hashing_method)(const std::string&, int, int)) : size(size), hashing_method(hashing_method)
   {
     table = new User[size];
+    for (int i = 0; i < size; i++)
+    {
+      table[i] = User();
+    }
   }
 
   void insert(const User& user)

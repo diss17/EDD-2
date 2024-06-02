@@ -9,6 +9,9 @@ struct hash_table_usernames_abierto {
   hash_table_usernames_abierto(int size) : size(size)
   {
     table = new std::list<User>[size];
+    for (int i = 0; i < size; i++) {
+      table[i] = std::list<User>();
+    }
   }
 
   /// @brief Función de hash simplificada de Jenkins
