@@ -12,6 +12,10 @@ struct hash_table_ids_abierto
     hash_table_ids_abierto(int size) : size(size)
     {
         table = new std::list<User>[size];
+        for (int i = 0; i < size; i++)
+        {
+            table[i] = std::list<User>();
+        }
     }
     /**
      * @brief Ejemplo de función de hashing.

@@ -57,33 +57,6 @@ int double_hashing(unsigned long long k, int n, int i)
 {
     return (h1(k, n) + i * (h2(k, n) + 1)) % n;
 }
-/// @brief Función para vaciar archivos CSV
-void vaciar_csv()
-{
-    std::ofstream file_out("linear_insert_ids.csv", std::ios::trunc);
-    file_out.close();
-    file_out.open("quadratic_insert_ids.csv", std::ios::trunc);
-    file_out << std::endl;
-    file_out.close();
-    file_out.open("unorderedmap_insert_ids.csv", std::ios::trunc);
-    file_out << std::endl;
-    file_out.close();
-    file_out.open("double_insert_ids.csv", std::ios::trunc);
-    file_out << std::endl;
-    file_out.close();
-    file_out.open("linear_search_ids.csv", std::ios::trunc);
-    file_out << std::endl;
-    file_out.close();
-    file_out.open("quadratic_search_ids.csv", std::ios::trunc);
-    file_out << std::endl;
-    file_out.close();
-    file_out.open("unorderedmap_search_ids.csv", std::ios::trunc);
-    file_out << std::endl;
-    file_out.close();
-    file_out.open("double_search_ids.csv", std::ios::trunc);
-    file_out << std::endl;
-    file_out.close();
-}
 int main(int argc, char const *argv[])
 {
     if (argc < 2)
@@ -95,10 +68,11 @@ int main(int argc, char const *argv[])
     // Ruta del archivo CSV
     // archivo sin repeticiones ni numeros en notacion cientifica
     string filename = "universities_followers_int64.csv";
+    string random = "universities_followers_int64.csv";
     // Crear una instancia de CSVReader
     csv_reader archivo(filename);
+    csv_reader archivo_random(random);
     // Definimos el tamano de la tabla hash
-    int N = 21070;
 
     // Extraer columnas de dataset para asignar su tipo segun la estructura user.h
     vector<string> university_column = archivo.extract_column(0);
@@ -109,11 +83,9 @@ int main(int argc, char const *argv[])
     vector<unsigned long long> followers_column = archivo.extract_column_as_ull(5);
     vector<string> created_column = archivo.extract_column(6);
 
-    hash_table_ids_abierto hta(N);
-
-    std::ofstream file("results_ids.csv", std::ios::app);
-
+    int N = 21070;
     vector<User> usuarios(N);
+    vector<User> usuarios_randoms(10);
     for (int i = 0; i < N; i++)
     {
         usuarios[i].university = university_column[i];
@@ -124,9 +96,14 @@ int main(int argc, char const *argv[])
         usuarios[i].followers_count = followers_column[i];
         usuarios[i].created_at = created_column[i];
     }
-    hash_table ht_linear(N, linear_probing);
-    hash_table ht_quadratic(N, quadratic_probing);
-    hash_table ht_double(N, double_hashing);
+    hash_table_ids_abierto hta(N);
+    std::ofstream file("results_ids.csv", std::ios::app);
+
+    std::ofstream file1("results_ids_random.csv", std::ios::app);
+
+    hash_table_ids ht_linear(N, linear_probing);
+    hash_table_ids ht_quadratic(N, quadratic_probing);
+    hash_table_ids ht_double(N, double_hashing);
     unordered_map<int, User> um;
     //////////////////HASHING ABIERTO////////////////////////////
 
@@ -149,13 +126,22 @@ int main(int argc, char const *argv[])
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     file << "hashing_abierto_ids" << ";" << "hashing_abierto_search" << ";" << n << ";" << duration << endl;
 
-    ////////////HASHING CERRADO////////////////////////////////
+    // BUSQUEDAS DE USERS NO EXISTENTES CON HASHING ABIERTO
+
+        start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < usuarios_randoms.size(); i++)
+    {
+        hta.search(usuarios_randoms[i]);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    file1 << "hashing_abierto_ids" << ";" << "hashing_abierto_searchrandom" << ";" << usuarios_randoms.size() << ";" << duration << endl;
     ///////////INSERCIONES/////////////////////////////////////
+
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
     {
-        unsigned long long num = usuarios[i].user_id;
-        ht_linear.insert(num);
+        ht_linear.insert(usuarios[i]);
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
@@ -164,8 +150,7 @@ int main(int argc, char const *argv[])
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
     {
-        unsigned long long num = usuarios[i].user_id;
-        ht_quadratic.insert(num);
+        ht_quadratic.insert(usuarios[i]);
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
@@ -174,8 +159,7 @@ int main(int argc, char const *argv[])
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
     {
-        unsigned long long num = usuarios[i].user_id;
-        ht_double.insert(num);
+        ht_double.insert(usuarios[i]);
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
@@ -195,8 +179,7 @@ int main(int argc, char const *argv[])
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
     {
-        unsigned long long num = usuarios[i].user_id;
-        ht_linear.search(num);
+        ht_linear.search(usuarios[i]);
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
@@ -205,8 +188,7 @@ int main(int argc, char const *argv[])
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
     {
-        unsigned long long num = usuarios[i].user_id;
-        ht_quadratic.search(num);
+        ht_quadratic.search(usuarios[i]);
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
@@ -215,8 +197,7 @@ int main(int argc, char const *argv[])
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
     {
-        unsigned long long num = usuarios[i].user_id;
-        ht_double.search(num);
+        ht_double.search(usuarios[i]);
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
@@ -231,5 +212,43 @@ int main(int argc, char const *argv[])
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     file << "hashing_cerrado_ids" << ";" << "unorderedmap_search" << ";" << n << ";" << duration << std::endl;
+
+    //////////////////BUSQUEDAS DE USUARIOS NO EXISTENTES EN LA TABLA HASH////////////////////////////////////
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < usuarios_randoms.size(); i++)
+    {
+        ht_linear.search(usuarios_randoms[i]);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    file1 << "hashing_cerrado_ids" << ";" << "linear_randomsearch" << ";" << usuarios_randoms.size() << ";" << duration << std::endl;
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < usuarios_randoms.size(); i++)
+    {
+        ht_quadratic.search(usuarios_randoms[i]);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    file1 << "hashing_cerrado_ids" << ";" << "quadratic_randomsearch" << ";" << usuarios_randoms.size() << ";" << duration << std::endl;
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < usuarios_randoms.size(); i++)
+    {
+        ht_double.search(usuarios_randoms[i]);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    file1 << "hashing_cerrado_ids" << ";" << "double_randomsearch" << ";" << usuarios_randoms.size() << ";" << duration << std::endl;
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < usuarios_randoms.size(); i++)
+    {
+        unsigned long long num = usuarios_randoms[i].user_id;
+        um.find(num);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    file1 << "hashing_cerrado_ids" << ";" << "unorderedmap_randomsearch" << ";" << usuarios_randoms.size() << ";" << duration << std::endl;
     return 0;
 }
