@@ -40,5 +40,36 @@ plt.xticks(rotation=45)
 plt.xlabel('Cantidad de Datos (n)')
 
 # Mostrar la gráfica
+#plt.tight_layout()
+#plt.show()
+
+# Leer los datos desde el archivo CSV
+df_inventados = pd.read_csv('results_names_inventados.csv', sep=';', names=["hash_type", "operation", "n", "duration"])
+
+# Convertir la columna 'duration' a valores numéricos
+df_inventados['duration'] = pd.to_numeric(df_inventados['duration'])
+
+# Calcular el promedio de los tiempos de duración para cada combinación de hash_type, operation y n
+avg_df_inventados = df_inventados.groupby(['hash_type', 'operation', 'n']).mean().reset_index()
+
+# Crear subgráficas para inserciones y búsquedas
+fig, ax = plt.subplots(1, 1, figsize=(12, 10), sharex=True)
+
+# Graficar los tiempos de búsqueda promedio
+search_df_inventados = avg_df_inventados[avg_df_inventados['operation'].str.contains('search')]
+for key, grp in search_df_inventados.groupby(['hash_type', 'operation']):
+    ax.plot(grp['n'], grp['duration'], marker='o', linestyle='-', label=f'{key}')
+
+ax.set_title('Tiempos de Búsqueda Promedio')
+ax.set_ylabel('Duración Promedio (ns)')
+ax.set_yscale('log')
+#ax.set_xscale('log')
+ax.legend()
+
+# Ajustar la rotación de las etiquetas en el eje x
+plt.xticks(rotation=45)
+plt.xlabel('Cantidad de Datos (n)')
+
+# Mostrar la gráfica
 plt.tight_layout()
 plt.show()

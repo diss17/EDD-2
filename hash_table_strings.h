@@ -27,14 +27,18 @@ struct hash_table_string
 
     table[hashingResult] = user;
   }
-
+  
   bool search(const User& user)
   {
-    int i = 0;
-    while (table[hashing_method(user.user_name, size, i)].user_name != user.user_name && table[hashing_method(user.user_name, size, i)].user_name != "")
-    {
+    int i = -1;
+    int hashingResult;
+    do {
       i++;
-    }
-    return table[hashing_method(user.user_name, size, i)].user_name == user.user_name;
+      hashingResult = hashing_method(user.user_name, size, i);
+      if (table[hashingResult].user_name == user.user_name) {
+        return true;
+      }
+    } while (table[hashingResult].user_name != "" && i < size);
+    return false;
   }
 };

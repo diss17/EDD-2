@@ -87,11 +87,11 @@ int main(int argc, char *argv[])
     }
     int n = atoi(argv[1]);
 
-    // Ruta del archivo CSV
+    // Ruta del archivo_inventados CSV
     // archivo sin repeticiones ni numeros en notacion cientifica
     std::string filename = "universities_followers_int64.csv";
     csv_reader archivo(filename);
-    
+
     // Extraer columnas del archivo CSV
     vector<std::string> university_column = archivo.extract_column(0);
     vector<unsigned long long> id_column = archivo.extract_column_as_ull(1);
@@ -101,9 +101,20 @@ int main(int argc, char *argv[])
     vector<unsigned long long> followers_column = archivo.extract_column_as_ull(5);
     vector<std::string> created_column = archivo.extract_column(6);
 
+    csv_reader archivo_inventados("universities_followers_random.csv");
+    // Extraer columnas del archivo CSV de usuarios inventados
+    vector<std::string> university_column_inventados = archivo_inventados.extract_column(0);
+    vector<unsigned long long> id_column_inventados = archivo_inventados.extract_column_as_ull(1);
+    vector<std::string> username_column_inventados = archivo_inventados.extract_column(2);
+    vector<unsigned long long> number_column_inventados = archivo_inventados.extract_column_as_ull(3);
+    vector<unsigned long long> friends_column_inventados = archivo_inventados.extract_column_as_ull(4);
+    vector<unsigned long long> followers_column_inventados = archivo_inventados.extract_column_as_ull(5);
+    vector<std::string> created_column_inventados = archivo_inventados.extract_column(6);
+
     // Crear vector de usuarios
     int N = 21070;
     vector<User> usuarios(N);
+    vector<User> usuariosInventados(n);
     // Llenar el vector de usuarios
     for (int i = 0; i < N; i++)
     {
@@ -114,6 +125,17 @@ int main(int argc, char *argv[])
         usuarios[i].friends_count = friends_column[i];
         usuarios[i].followers_count = followers_column[i];
         usuarios[i].created_at = created_column[i];
+    }
+    // Llenar el vector de usuarios inventados
+    for (int i = 0; i < n; i++)
+    {
+        usuariosInventados[i].university = university_column_inventados[i];
+        usuariosInventados[i].user_id = id_column_inventados[i];
+        usuariosInventados[i].user_name = username_column_inventados[i];
+        usuariosInventados[i].number_tweets = number_column_inventados[i];
+        usuariosInventados[i].friends_count = friends_column_inventados[i];
+        usuariosInventados[i].followers_count = followers_column_inventados[i];
+        usuariosInventados[i].created_at = created_column_inventados[i];
     }
 
     hash_table_usernames_abierto hta(N);
@@ -219,5 +241,55 @@ int main(int argc, char *argv[])
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     file << "hashing_cerrado_usernames" << ";" << "unorderedmap_search" << ";" << n << ";" << duration << std::endl;
+    
+    std::ofstream file2("results_names_inventados.csv", std::ios::app);
+    ///////////////BUSQUEDA USUARIOS INVENTADOS////////////////////////
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        hta.search(usuariosInventados[i]);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    file2 << "hashing_abierto_usernames" << ";" << "hashing_abierto_search_random" << ";" << n << ";" << duration << std::endl;
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        htc_linear.search(usuariosInventados[i]);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    file2 << "hashing_cerrado_usernames" << ";" << "linear_search_random" << ";" << n << ";" << duration << std::endl;
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        htc_quadratic.search(usuariosInventados[i]);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    file2 << "hashing_cerrado_usernames" << ";" << "quadratic_search_random" << ";" << n << ";" << duration << std::endl;
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        htc_double.search(usuariosInventados[i]);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    file2 << "hashing_cerrado_usernames" << ";" << "double_search_random" << ";" << n << ";" << duration << std::endl;
+
+    start = chrono::high_resolution_clock::now();
+    for (int i = 0; i < n; i++)
+    {
+        um.find(usuariosInventados[i].user_name);
+    }
+    end = chrono::high_resolution_clock::now();
+    duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    file2 << "hashing_cerrado_usernames" << ";" << "unorderedmap_search_random" << ";" << n << ";" << duration << std::endl;
+
+    file2.close();
+    
     return 0;
 }
