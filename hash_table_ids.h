@@ -23,6 +23,12 @@ struct hash_table_ids
       table[i] = User();
     }
   }
+  size_t memory_footprint() const
+  {
+    size_t size_of_struct = sizeof(size) + sizeof(table) + sizeof(hashing_method);
+    size_t size_of_array = sizeof(User) * size;
+    return size_of_struct + size_of_array;
+  }
   /**
    * @brief Inserta una clave en la tabla hash.
    * @param key clave a insertar.

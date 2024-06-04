@@ -343,9 +343,9 @@ int main(int argc, char *argv[])
     file.close();
     file2.close();
 
-    std::ofstream file3("memory.csv", std::ios::app);
-    file3 << "hashing_usernames" << ";" << "hashing_abierto" << ";" << n << ";" << hashTableSize(hta) / 1024.0 << std::endl;
-    file3 << "hashing_usernames" << ";" << "hashing_cerrado" << ";" << n << ";" << hashTableSize(htc_linear) / 1024.0 << std::endl;
+    std::ofstream file3("memory1.csv", std::ios::app);
+    file3 << "hashing_usernames" << ";" << "hashing_abierto" << ";" << n << ";" << hta.memory_footprint() / 1024.0 << std::endl;
+    file3 << "hashing_usernames" << ";" << "hashing_cerrado" << ";" << n << ";" << htc_linear.memory_footprint() / 1024.0 << std::endl;
     file3.close();    
 
     return 0;

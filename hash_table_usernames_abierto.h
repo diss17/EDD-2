@@ -33,7 +33,23 @@ struct hash_table_usernames_abierto
     hash += (hash << 15);
     return hash % size;
   }
+  size_t memory_footprint() const
+  {
+    size_t size_of_struct = sizeof(size) + sizeof(table);
+    size_t size_of_lists = 0;
 
+    for (int i = 0; i < size; ++i)
+    {
+      // Overhead of the list structure itself
+      size_of_lists += sizeof(std::list<User>);
+      // Add the size of each element in the list
+      for (const User &user : table[i])
+      {
+        size_of_lists += sizeof(user);
+      }
+    }
+    return size_of_struct + size_of_lists;
+  }
   void insert(const User &user)
   {
     int hashingResult;

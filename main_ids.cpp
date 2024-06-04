@@ -326,10 +326,10 @@ int main(int argc, char const *argv[])
     file.close();
     file1.close();
 
-    std::ofstream file3("memory.csv", std::ios::app);
+    std::ofstream file3("memory1.csv", std::ios::app);
     file3 << "vector_usuarios" << ";" << "usuarios" << ";" << n << ";" << vectorSize(usuarios) / 1024.0 << std::endl;
-    file3 << "hashing_ids" << ";" << "hashing_abierto" << ";" << n << ";" << hashTableSize(hta) / 1024.0 << std::endl;
-    file3 << "hashing_ids" << ";" << "hashing_cerrado" << ";" << n << ";" << hashTableSize(ht_linear) / 1024.0 << std::endl;
+    file3 << "hashing_ids" << ";" << "hashing_abierto" << ";" << n << ";" << hta.memory_footprint() / 1024.0<< std::endl;
+    file3 << "hashing_ids" << ";" << "hashing_cerrado" << ";" << n << ";" << ht_linear.memory_footprint() /1024.0<< std::endl;
     file3.close();    
 
     return 0;
