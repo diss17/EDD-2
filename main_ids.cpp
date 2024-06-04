@@ -57,6 +57,58 @@ int double_hashing(unsigned long long k, int n, int i)
 {
     return (h1(k, n) + i * (h2(k, n) + 1)) % n;
 }
+
+/// @brief Metodo par calcular el tamaño de un string
+/// @param str string para calcular su tamaño
+/// @return tamaño del string
+size_t stringSize(const std::string& str) {
+    return sizeof(str) + str.capacity();
+}
+
+/// @brief Metodo para calcular el tamaño de un usuario
+/// @param user usuario al que calcular su tamaño
+/// @return tamaño del usuario
+size_t userSize(const User& user) {
+    return sizeof(user.user_id) + sizeof(user.number_tweets) + sizeof(user.friends_count) +
+           sizeof(user.followers_count) + stringSize(user.university) +
+           stringSize(user.user_name) + stringSize(user.created_at);
+}
+
+/// @brief Metodo para calcular el tamaño de un vector
+/// @param vector vector al que calcular su tamaño
+/// @return tamaño del vector
+size_t vectorSize(const std::vector<User>& vector) {
+    size_t totalSize = sizeof(vector) + vector.capacity() * sizeof(User);
+    for (User user : vector) {
+        totalSize += userSize(user);
+    }
+    return totalSize;
+}
+
+/// @brief Metodo para calcular el tamaño de una tabla hash
+/// @param hashTable hashTable al que calcular su tamaño
+/// @return tamaño de la tabla hash
+size_t hashTableSize(const hash_table_ids& hashTable) {
+    size_t totalSize = sizeof(hashTable.size) + sizeof(hashTable.table) + sizeof(hashTable.hashing_method) + hashTable.size * sizeof(User);
+    for (int i = 0; i < hashTable.size; i++) {
+        totalSize += userSize(hashTable.table[i]);
+    }
+    return totalSize;
+}
+
+/// @brief Metodo para calcular el tamaño de una tabla hash
+/// @param hashTable hashTable al que calcular su tamaño
+/// @return tamaño de la tabla hash
+size_t hashTableSize(const hash_table_ids_abierto& hashTable) {
+    size_t totalSize = sizeof(hashTable.size) + sizeof(hashTable.table) + hashTable.size * sizeof(std::list<User>);
+    for (int i = 0; i < hashTable.size; i++) {
+        for(User user : hashTable.table[i]) {
+            totalSize += userSize(user);
+        }
+    }
+    return totalSize;
+}
+
 int main(int argc, char const *argv[])
 {
     if (argc < 2)
@@ -92,10 +144,10 @@ int main(int argc, char const *argv[])
     vector<unsigned long long> followers_column_random = archivo_random.extract_column_as_ull(5);
     vector<string> created_column_random = archivo_random.extract_column(6);
 
-    int N = 21070;
-    vector<User> usuarios(N);
+
+    vector<User> usuarios(n);
     vector<User> usuarios_randoms(n);
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < n; i++)
     {
         usuarios[i].university = university_column[i];
         usuarios[i].user_id = id_column[i];
@@ -117,14 +169,14 @@ int main(int argc, char const *argv[])
         usuarios_randoms[i].created_at = created_column_random[i];
     }
     
-    hash_table_ids_abierto hta(N);
+    hash_table_ids_abierto hta(n);
     std::ofstream file("results_ids.csv", std::ios::app);
 
     std::ofstream file1("results_ids_random.csv", std::ios::app);
 
-    hash_table_ids ht_linear(N, linear_probing);
-    hash_table_ids ht_quadratic(N, quadratic_probing);
-    hash_table_ids ht_double(N, double_hashing);
+    hash_table_ids ht_linear(n, linear_probing);
+    hash_table_ids ht_quadratic(n, quadratic_probing);
+    hash_table_ids ht_double(n, double_hashing);
     unordered_map<int, User> um;
     //////////////////HASHING ABIERTO////////////////////////////
 
@@ -270,5 +322,15 @@ int main(int argc, char const *argv[])
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
     file1 << "hashing_cerrado_ids" << ";" << "unorderedmap_randomsearch" << ";" << usuarios_randoms.size() << ";" << duration << std::endl;
+
+    file.close();
+    file1.close();
+
+    std::ofstream file3("memory.csv", std::ios::app);
+    file3 << "vector_usuarios" << ";" << "usuarios" << ";" << n << ";" << vectorSize(usuarios) / 1024.0 << std::endl;
+    file3 << "hashing_ids" << ";" << "hashing_abierto" << ";" << n << ";" << hashTableSize(hta) / 1024.0 << std::endl;
+    file3 << "hashing_ids" << ";" << "hashing_cerrado" << ";" << n << ";" << hashTableSize(ht_linear) / 1024.0 << std::endl;
+    file3.close();    
+
     return 0;
 }

@@ -49,7 +49,9 @@
         "streambuf": "cpp",
         "typeinfo": "cpp",
         "list": "cpp",
-        "cstdarg": "cpp"
+        "cstdarg": "cpp",
+        "optional": "cpp",
+        "ranges": "cpp"
     },
     "python.analysis.autoImportCompletions": true
 }
