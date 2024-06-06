@@ -23,6 +23,11 @@ struct hash_table_ids
       table[i] = User();
     }
   }
+
+  /**
+   * @brief Metodo para calcular el tamaño de la tabla hash.
+   * @return Tamaño de la tabla hash.
+   */
   size_t memory_footprint() const
   {
     size_t size_of_struct = sizeof(size) + sizeof(table) + sizeof(hashing_method);
@@ -53,15 +58,17 @@ struct hash_table_ids
    */
   bool search(const User &user)
   {
-    int i = -1;
-    while (table[hashing_method(user.user_id, size, i)].user_id != user.user_id && table[hashing_method(user.user_id, size, i)].user_id != -1)
+    int i = 0;
+    int hashing_result = hashing_method(user.user_id, size, i); 
+    while (table[hashing_result].user_id != user.user_id && table[hashing_result].user_id != 0)
     {
       i++;
       if (i == size)
       {
         return false;
       }
+      hashing_result = hashing_method(user.user_id, size, i);
     }
-    return table[hashing_method(user.user_id, size, i)].user_id == user.user_id; ///< Retorna true si se encuentra la clave.
+    return table[hashing_result].user_id == user.user_id; ///< Retorna true si se encuentra la clave.
   }
 };

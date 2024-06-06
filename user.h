@@ -3,6 +3,7 @@
 
 #include <string>
 
+/// @brief Estructura que representa un usuario
 struct User {
     std::string university;
     unsigned long long user_id;

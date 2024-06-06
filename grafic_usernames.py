@@ -31,7 +31,7 @@ fig, ax = plt.subplots(1, 1, figsize=(12, 10), sharex=True)
 # Graficar los tiempos de búsqueda promedio
 search_df = avg_df[avg_df['operation'].str.contains('search')]
 for key, grp in search_df.groupby(['hash_type', 'operation']):
-    ax.plot(grp['n'], grp['duration'], marker='o', linestyle='-', label=f'{key[0]}')
+    ax.plot(grp['n'], grp['duration'], marker='o', linestyle='-', label=f'{key}')
 
 ax.set_title('Tiempos de Búsqueda Promedio', fontsize = 16, fontweight = 'bold')
 ax.set_ylabel('Duración Promedio (ns)', fontsize = 14, fontweight = 'bold')

@@ -120,7 +120,7 @@ int main(int argc, char const *argv[])
     // Ruta del archivo CSV
     // archivo sin repeticiones ni numeros en notacion cientifica
     string filename = "universities_followers_int64.csv";
-    string random = "universities_followers_int64.csv";
+    string random = "universities_followers_random.csv";
     // Crear una instancia de CSVReader
     csv_reader archivo(filename);
     csv_reader archivo_random(random);
@@ -326,7 +326,8 @@ int main(int argc, char const *argv[])
     file.close();
     file1.close();
 
-    std::ofstream file3("memory1.csv", std::ios::app);
+    // calculo de memoria
+    std::ofstream file3("memory.csv", std::ios::app);
     file3 << "vector_usuarios" << ";" << "usuarios" << ";" << n << ";" << vectorSize(usuarios) / 1024.0 << std::endl;
     file3 << "hashing_ids" << ";" << "hashing_abierto" << ";" << n << ";" << hta.memory_footprint() / 1024.0<< std::endl;
     file3 << "hashing_ids" << ";" << "hashing_cerrado" << ";" << n << ";" << ht_linear.memory_footprint() /1024.0<< std::endl;

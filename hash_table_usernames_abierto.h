@@ -2,11 +2,14 @@
 #include <list>
 #include "user.h"
 
+/// @brief Estructura que representa una tabla hash con hashing abierto
 struct hash_table_usernames_abierto
 {
   int size;
   std::list<User> *table;
 
+  /// @brief Constructor de la tabla hash.
+  /// @param size tamaño de la tabla hash.
   hash_table_usernames_abierto(int size) : size(size)
   {
     table = new std::list<User>[size];
@@ -33,6 +36,9 @@ struct hash_table_usernames_abierto
     hash += (hash << 15);
     return hash % size;
   }
+
+  /// @brief Metodo para calcular el tamaño de la tabla hash
+
   size_t memory_footprint() const
   {
     size_t size_of_struct = sizeof(size) + sizeof(table);
@@ -50,6 +56,9 @@ struct hash_table_usernames_abierto
     }
     return size_of_struct + size_of_lists;
   }
+
+  /// @brief Metodo para insertar un usuario en la tabla hash
+  /// @param user usuario a insertar
   void insert(const User &user)
   {
     int hashingResult;
@@ -57,6 +66,9 @@ struct hash_table_usernames_abierto
     table[hashingResult].push_back(user);
   }
 
+  /// @brief Metodo para buscar un usuario en la tabla hash
+  /// @param user usuario a buscar
+  /// @return true si el usuario se encuentra en la tabla hash, false en caso contrario
   bool search(const User &user)
   {
     int hashingResult = simple_hash(user.user_name);
