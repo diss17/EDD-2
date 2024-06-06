@@ -58,17 +58,17 @@ struct hash_table_ids
    */
   bool search(const User &user)
   {
-    int i = 0;
-    int hashing_result = hashing_method(user.user_id, size, i); 
-    while (table[hashing_result].user_id != user.user_id && table[hashing_result].user_id != 0)
+    int i = -1;
+    int hashingResult; 
+    do
     {
       i++;
-      if (i == size)
+      hashingResult = hashing_method(user.user_id, size, i);
+      if (table[hashingResult].user_id == user.user_id)
       {
-        return false;
+        return true;
       }
-      hashing_result = hashing_method(user.user_id, size, i);
-    }
-    return table[hashing_result].user_id == user.user_id; ///< Retorna true si se encuentra la clave.
+    } while (table[hashingResult].user_id != 0 && i < size);
+    return false;
   }
 };

@@ -2,7 +2,7 @@ from tkinter import font
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv('memory1.csv', sep=';', names=["data structure", "type", "n", "size"])
+df = pd.read_csv('memory.csv', sep=';', names=["data structure", "type", "n", "size"])
 
 df['size'] = pd.to_numeric(df['size'])
 
