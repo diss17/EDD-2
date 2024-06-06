@@ -5,7 +5,7 @@
 #include <math.h>
 #include "hash_table_ids.h"
 #include "hash_table_ids_abierto.h"
-#include "User.h"
+#include "user.h"
 
 using namespace std;
 // Numero aureo
@@ -19,6 +19,7 @@ unsigned long long h1(unsigned long long k, int n)
 {
     return k % n;
 }
+
 /// @brief Segunda funcion hash(metodo de multiplicacion)
 /// @param k Clave
 /// @param n Tamaño tabla hash
@@ -39,6 +40,7 @@ int linear_probing(unsigned long long k, int n, int i)
 {
     return (h1(k, n) + i) % n;
 }
+
 /// @brief Metodo de manejo de colisiones(Quadratic probing)
 /// @param k Clave para aplicar hashing
 /// @param n tamaño de la tabla
@@ -48,6 +50,7 @@ int quadratic_probing(unsigned long long k, int n, int i)
 {
     return (h1(k, n) + i + 2 * i * i) % n;
 }
+
 /// @brief Metodo de manejo de colisiones(Double Hashing)
 /// @param k clave para aplicar hashing
 /// @param n tamaño tabla
@@ -56,57 +59,6 @@ int quadratic_probing(unsigned long long k, int n, int i)
 int double_hashing(unsigned long long k, int n, int i)
 {
     return (h1(k, n) + i * (h2(k, n) + 1)) % n;
-}
-
-/// @brief Metodo par calcular el tamaño de un string
-/// @param str string para calcular su tamaño
-/// @return tamaño del string
-size_t stringSize(const std::string& str) {
-    return sizeof(str) + str.capacity();
-}
-
-/// @brief Metodo para calcular el tamaño de un usuario
-/// @param user usuario al que calcular su tamaño
-/// @return tamaño del usuario
-size_t userSize(const User& user) {
-    return sizeof(user.user_id) + sizeof(user.number_tweets) + sizeof(user.friends_count) +
-           sizeof(user.followers_count) + stringSize(user.university) +
-           stringSize(user.user_name) + stringSize(user.created_at);
-}
-
-/// @brief Metodo para calcular el tamaño de un vector
-/// @param vector vector al que calcular su tamaño
-/// @return tamaño del vector
-size_t vectorSize(const std::vector<User>& vector) {
-    size_t totalSize = sizeof(vector) + vector.capacity() * sizeof(User);
-    for (User user : vector) {
-        totalSize += userSize(user);
-    }
-    return totalSize;
-}
-
-/// @brief Metodo para calcular el tamaño de una tabla hash
-/// @param hashTable hashTable al que calcular su tamaño
-/// @return tamaño de la tabla hash
-size_t hashTableSize(const hash_table_ids& hashTable) {
-    size_t totalSize = sizeof(hashTable.size) + sizeof(hashTable.table) + sizeof(hashTable.hashing_method) + hashTable.size * sizeof(User);
-    for (int i = 0; i < hashTable.size; i++) {
-        totalSize += userSize(hashTable.table[i]);
-    }
-    return totalSize;
-}
-
-/// @brief Metodo para calcular el tamaño de una tabla hash
-/// @param hashTable hashTable al que calcular su tamaño
-/// @return tamaño de la tabla hash
-size_t hashTableSize(const hash_table_ids_abierto& hashTable) {
-    size_t totalSize = sizeof(hashTable.size) + sizeof(hashTable.table) + hashTable.size * sizeof(std::list<User>);
-    for (int i = 0; i < hashTable.size; i++) {
-        for(User user : hashTable.table[i]) {
-            totalSize += userSize(user);
-        }
-    }
-    return totalSize;
 }
 
 int main(int argc, char const *argv[])
@@ -327,11 +279,10 @@ int main(int argc, char const *argv[])
     file1.close();
 
     // calculo de memoria
-    std::ofstream file3("memory.csv", std::ios::app);
-    file3 << "vector_usuarios" << ";" << "usuarios" << ";" << n << ";" << vectorSize(usuarios) / 1024.0 << std::endl;
-    file3 << "hashing_ids" << ";" << "hashing_abierto" << ";" << n << ";" << hta.memory_footprint() / 1024.0<< std::endl;
-    file3 << "hashing_ids" << ";" << "hashing_cerrado" << ";" << n << ";" << ht_linear.memory_footprint() /1024.0<< std::endl;
-    file3.close();    
+    std::ofstream file2("memory.csv", std::ios::app);
+    file2 << "hashing_ids" << ";" << "hashing_abierto" << ";" << n << ";" << hta.memory_footprint() / 1024.0<< std::endl;
+    file2 << "hashing_ids" << ";" << "hashing_cerrado" << ";" << n << ";" << ht_linear.memory_footprint() /1024.0<< std::endl;
+    file2.close();    
 
     return 0;
 }

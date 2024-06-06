@@ -1,13 +1,14 @@
 #include <list>
 #include <vector>
 #include "user.h"
+
 /**
  * @brief Estructura que representa una tabla hash con el metodo de hashing abierto.
  */
 struct hash_table_ids_abierto
 {
     int size;               /// Tamaño de la tabla hash.
-    std::list<User> *table; /// Vector de listas que representa la tabla hash./// Puntero a la función de hashing.
+    std::list<User> *table; /// Vector de listas que representa la tabla hash.
 
     hash_table_ids_abierto(int size) : size(size)
     {
@@ -17,6 +18,7 @@ struct hash_table_ids_abierto
             table[i] = std::list<User>();
         }
     }
+
     /**
      * @brief Ejemplo de función de hashing.
      * @param key Clave a hashear.
@@ -27,6 +29,7 @@ struct hash_table_ids_abierto
     {
         return key % size;
     }
+
     /**
      * @brief Metodo para calcular el tamaño de la tabla hash.
      * @return Tamaño de la tabla hash.
@@ -48,6 +51,7 @@ struct hash_table_ids_abierto
         }
         return size_of_struct + size_of_lists;
     }
+    
     /**
      * @brief Metodo para insertar un usuario en la tabla hash.
      * @param user Usuario a insertar.

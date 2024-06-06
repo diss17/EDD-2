@@ -10,6 +10,7 @@
 
 // Numero aureo
 float A = (sqrt(5) - 1) / 2;
+
 /// @brief Función de hash simplificada de Jenkins
 /// @param str Cadena a la que se le aplicará el hash
 /// @return Valor hash de la cadena
@@ -27,6 +28,7 @@ unsigned long long simple_hash(const std::string &str)
     hash += (hash << 15);
     return hash;
 }
+
 /// @brief Primera función hash (método de división)
 /// @param k Clave
 /// @param n Tamaño de la tabla hash
@@ -76,57 +78,6 @@ int quadratic_probing(const std::string &k, int n, int i)
 int double_hashing(const std::string &k, int n, int i)
 {
     return (h1(k, n) + i * (h2(k, n) + 1)) % n;
-}
-
-/// @brief Metodo par calcular el tamaño de un string
-/// @param str string para calcular su tamaño
-/// @return tamaño del string
-size_t stringSize(const std::string& str) {
-    return sizeof(str) + str.capacity();
-}
-
-/// @brief Metodo para calcular el tamaño de un usuario
-/// @param user usuario al que calcular su tamaño
-/// @return tamaño del usuario
-size_t userSize(const User& user) {
-    return sizeof(user.user_id) + sizeof(user.number_tweets) + sizeof(user.friends_count) +
-           sizeof(user.followers_count) + stringSize(user.university) +
-           stringSize(user.user_name) + stringSize(user.created_at);
-}
-
-/// @brief Metodo para calcular el tamaño de un vector
-/// @param vector vector al que calcular su tamaño
-/// @return tamaño del vector
-size_t vectorSize(const std::vector<User>& vector) {
-    size_t totalSize = sizeof(vector) + vector.capacity() * sizeof(User);
-    for (User user : vector) {
-        totalSize += userSize(user);
-    }
-    return totalSize;
-}
-
-/// @brief Metodo para calcular el tamaño de una tabla hash
-/// @param hashTable hashTable al que calcular su tamaño
-/// @return tamaño de la tabla hash
-size_t hashTableSize(const hash_table_string& hashTable) {
-    size_t totalSize = sizeof(hashTable.size) + sizeof(hashTable.table) + sizeof(hashTable.hashing_method) + hashTable.size * sizeof(User);
-    for (int i = 0; i < hashTable.size; i++) {
-        totalSize += userSize(hashTable.table[i]);
-    }
-    return totalSize;
-}
-
-/// @brief Metodo para calcular el tamaño de una tabla hash
-/// @param hashTable hashTable al que calcular su tamaño
-/// @return tamaño de la tabla hash
-size_t hashTableSize(const hash_table_usernames_abierto& hashTable) {
-    size_t totalSize = sizeof(hashTable.size) + sizeof(hashTable.table) + hashTable.size * sizeof(std::list<User>);
-    for (int i = 0; i < hashTable.size; i++) {
-        for(User user : hashTable.table[i]) {
-            totalSize += userSize(user);
-        }
-    }
-    return totalSize;
 }
 
 int main(int argc, char *argv[])
@@ -293,7 +244,7 @@ int main(int argc, char *argv[])
     file << "hashing_cerrado_usernames" << ";" << "unorderedmap_search" << ";" << n << ";" << duration << std::endl;
     file.close();
 
-    std::ofstream file2("results_names_random.csv", std::ios::app);
+    std::ofstream file1("results_names_random.csv", std::ios::app);
     ///////////////BUSQUEDA USUARIOS INVENTADOS////////////////////////
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
@@ -302,7 +253,7 @@ int main(int argc, char *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    file2 << "hashing_abierto_usernames" << ";" << "hashing_abierto_search_random" << ";" << n << ";" << duration << std::endl;
+    file1 << "hashing_abierto_usernames" << ";" << "hashing_abierto_search_random" << ";" << n << ";" << duration << std::endl;
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
@@ -311,7 +262,7 @@ int main(int argc, char *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    file2 << "hashing_cerrado_usernames" << ";" << "linear_search_random" << ";" << n << ";" << duration << std::endl;
+    file1 << "hashing_cerrado_usernames" << ";" << "linear_search_random" << ";" << n << ";" << duration << std::endl;
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
@@ -320,7 +271,7 @@ int main(int argc, char *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    file2 << "hashing_cerrado_usernames" << ";" << "quadratic_search_random" << ";" << n << ";" << duration << std::endl;
+    file1 << "hashing_cerrado_usernames" << ";" << "quadratic_search_random" << ";" << n << ";" << duration << std::endl;
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
@@ -329,7 +280,7 @@ int main(int argc, char *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    file2 << "hashing_cerrado_usernames" << ";" << "double_search_random" << ";" << n << ";" << duration << std::endl;
+    file1 << "hashing_cerrado_usernames" << ";" << "double_search_random" << ";" << n << ";" << duration << std::endl;
 
     start = chrono::high_resolution_clock::now();
     for (int i = 0; i < n; i++)
@@ -338,15 +289,15 @@ int main(int argc, char *argv[])
     }
     end = chrono::high_resolution_clock::now();
     duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    file2 << "hashing_cerrado_usernames" << ";" << "unorderedmap_search_random" << ";" << n << ";" << duration << std::endl;
+    file1 << "hashing_cerrado_usernames" << ";" << "unorderedmap_search_random" << ";" << n << ";" << duration << std::endl;
 
     file.close();
-    file2.close();
+    file1.close();
 
-    std::ofstream file3("memory.csv", std::ios::app);
-    file3 << "hashing_usernames" << ";" << "hashing_abierto" << ";" << n << ";" << hta.memory_footprint() / 1024.0 << std::endl;
-    file3 << "hashing_usernames" << ";" << "hashing_cerrado" << ";" << n << ";" << htc_linear.memory_footprint() / 1024.0 << std::endl;
-    file3.close();    
+    std::ofstream file2("memory.csv", std::ios::app);
+    file2 << "hashing_usernames" << ";" << "hashing_abierto" << ";" << n << ";" << hta.memory_footprint() / 1024.0 << std::endl;
+    file2 << "hashing_usernames" << ";" << "hashing_cerrado" << ";" << n << ";" << htc_linear.memory_footprint() / 1024.0 << std::endl;
+    file2.close();    
 
     return 0;
 }

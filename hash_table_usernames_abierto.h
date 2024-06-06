@@ -38,7 +38,6 @@ struct hash_table_usernames_abierto
   }
 
   /// @brief Metodo para calcular el tamaño de la tabla hash
-
   size_t memory_footprint() const
   {
     size_t size_of_struct = sizeof(size) + sizeof(table);

@@ -1,5 +1,6 @@
 #include "user.h"
 #include <iostream>
+
 /**
  * @brief Estructura que representa una tabla hash.
  */
@@ -34,6 +35,7 @@ struct hash_table_ids
     size_t size_of_array = sizeof(User) * size;
     return size_of_struct + size_of_array;
   }
+  
   /**
    * @brief Inserta una clave en la tabla hash.
    * @param key clave a insertar.
