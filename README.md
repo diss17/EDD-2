@@ -31,7 +31,7 @@ Entregable en el que se compara el rendimiento de distintas tablas hash para usu
     ```
 3. Ejecutar el programa(en Windows):
     ```sh
-    ./main_ids (cantidad de datos)
+    .\main_ids (cantidad de datos)
     ```
 
 ### Ejecución del Experimento Completo
